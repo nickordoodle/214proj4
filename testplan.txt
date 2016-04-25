@@ -1,0 +1,12 @@
+Overall Algorithm:
+
+One "Bank" Data Structure
+- Holds up to 20 accounts, no more than that
+- Handles user client connections
+- Sends error/confirmation messages for each user request
+
+The "Client"
+- Cannot open a new account if in a customer session
+- Can open a new account otherwise ^^
+- Any 'operations' on the account require a 'customer session'
+
