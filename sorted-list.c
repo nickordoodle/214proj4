@@ -28,7 +28,7 @@ int addClient(char *clientName){
       
       clientCount++;
       
-       return insertclient(head, clientName);
+       return insertClient(head, clientName);
 }
 //CHANGE TO ACCESS CLIENT and haVE ADDLCLIENT CALL
 /*returns 1 if successful 0 if client name already exsisted*/
