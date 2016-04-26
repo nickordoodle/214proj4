@@ -4,33 +4,32 @@ Client *head = NULL;
 int clientCount = 0;
 
 /*creates newClient to be added to the BST*/
-Client createClient(clientName){
+Client* createClient(char *clientName){
         Client *newClient = malloc(sizeof(Client));
-        newClient->left = NULL; 
-        newClient->right = NULL; 
-        
+        newClient->left = NULL;
+        newClient->right = NULL;
+
         newClient ->name = malloc(sizeof(char) * strlen(clientName));
-        strcpy(Client -> name, clientName);
+        strcpy(newClient -> name, clientName);
         newClient->balance = 0;
-      
-        
-        return NewClient;
+        newClient->inuse = 0;
+
+        return newClient;
 }
 
 /*returns 1 if successful 0 if not*/
 int addClient(char *clientName){
       Client *newClient = createClient(clientName);
       Client *curr = NULL;
-      
+
       if(clientCount == 20){
-              return 0;        
+              return 0;
       }
-      
+
       clientCount++;
-      
+
        return insertClient(head, clientName);
 }
-//CHANGE TO ACCESS CLIENT and haVE ADDLCLIENT CALL
 /*returns 1 if successful 0 if client name already exsisted*/
 int insertClient(Client *curr, char* clientName){
         int compareVal = strcmp(curr->name, clientName);
@@ -38,20 +37,20 @@ int insertClient(Client *curr, char* clientName){
     /* Insert into left subtree */
     if(compareVal < 0){
         if(curr -> left  == NULL){
-                node -> left = createClient(clientName);
+                curr -> left = createClient(clientName);
                 return 1;
         } else{
             return insertClient(curr->left, clientName);
-        }
+ }
     }
-    
+
     /* Insert into right subtree */
     else if (compareVal > 0){
         if(curr -> right == NULL){
                 curr -> right = createClient(clientName);
                 return 1;
         } else{
-           returnVal = insertClient(curr->right, clientName);
+           return insertClient(curr->right, clientName);
         }
 
     }
@@ -60,7 +59,7 @@ int insertClient(Client *curr, char* clientName){
 }
 
 /*returns the Client struct if found returns NULL if not found*/
-Client accessClient(Client *curr, char* clientName){
+Client* accessClient(Client *curr, char* clientName){
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
@@ -71,36 +70,45 @@ Client accessClient(Client *curr, char* clientName){
             return accessClient(curr->left, clientName);
         }
     }
-    
+
     /* Insert into right subtree */
     else if (compareVal > 0){
         if(curr -> right == NULL){
                 return NULL;
         } else{
-           returnVal = insertClient(curr->right, clientName);
+           return accessClient(curr->right, clientName);
         }
 
     }
     /* Client has already previously occurred */
-   return curr;
+   curr->inuse = 1;
+ return curr;
 }
 
 
 
 
-/*For testing purposes only*/
-void print(FILE *fp){
 
-        /*Need ot add null check in case nothing has been added*/
-        Node * lastWord = list->head;
-        while(lastWord->right != NULL){
-                lastWord = lastWord->right;
+void print(){
+        if(clientCount == 0){
+                printf("No clients\n");
+                return;
         }
-        fprintf(fp, "{\"list\" :[  \n");
-        printNode(list->head, fp, lastWord->token);
+        printRecurs(head);
 
-        fprintf(fp, "]}");
+        return;
 }
 
+void printRecurs(Client* start){
+        Client * curr = start;
 
+        if(curr->left != NULL)
+                return printRecurs(curr->left);
+        if(curr->inuse == 0)
+                printf("Client:%s: \n\tBalance:%s\n\tIn use: no\n",curr->name,curr->balance);
+        else
+                printf("Client:%s: \n\tBalance:%s\n\tIn use: yes\n",curr->name,curr->balance);
 
+        if(curr->right != NULL)
+                return printRecurs(curr->right);
+}
