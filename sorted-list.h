@@ -15,20 +15,24 @@
 typedef struct Client{
         char *name;
         float balance;
+        int inuse;
         struct Client_ *left;
         struct Client_ *right;
 }Client;
 
-Client createClient(clientName);
+Client* createClient(char * clientName);
 int addClient(char *clientName);
 int insertClient(Client *curr, char* clientName);
-Client accessClient(Client *curr, char* clientName);
+Client* accessClient(Client *curr, char* clientName);
 
 
 
 
-/*For testing purposes only*/
+
 void print();
+void printRecurs(Client* start);
+
+
  
 
 
