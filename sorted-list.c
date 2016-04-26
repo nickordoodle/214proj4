@@ -33,9 +33,6 @@ int addClient(char *clientName){
 //CHANGE TO ACCESS CLIENT and haVE ADDLCLIENT CALL
 /*returns 1 if successful 0 if client name already exsisted*/
 int insertClient(Client *curr, char* clientName){
-        /*client already exsists*/
-      
-        void *nodeData = node->token;
         int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
@@ -44,7 +41,7 @@ int insertClient(Client *curr, char* clientName){
                 node -> left = createClient(clientName);
                 return 1;
         } else{
-            return insertClient(curr->left, token, clientName);
+            return insertClient(curr->left, clientName);
         }
     }
     
@@ -52,8 +49,9 @@ int insertClient(Client *curr, char* clientName){
     else if (compareVal > 0){
         if(curr -> right == NULL){
                 curr -> right = createClient(clientName);
+                return 1;
         } else{
-           returnVal = insertClient(curr->right,token, clientName);
+           returnVal = insertClient(curr->right, clientName);
         }
 
     }
@@ -61,11 +59,37 @@ int insertClient(Client *curr, char* clientName){
    return 0;
 }
 
+/*returns the Client struct if found returns NULL if not found*/
+Client accessClient(Client *curr, char* clientName){
+    int compareVal = strcmp(curr->name, clientName);
+
+    /* Insert into left subtree */
+    if(compareVal < 0){
+        if(curr -> left  == NULL){
+                return NULL;
+        } else{
+            return accessClient(curr->left, clientName);
+        }
+    }
+    
+    /* Insert into right subtree */
+    else if (compareVal > 0){
+        if(curr -> right == NULL){
+                return NULL;
+        } else{
+           returnVal = insertClient(curr->right, clientName);
+        }
+
+    }
+    /* Client has already previously occurred */
+   return curr;
+}
 
 
 
-/*this will be turned into how we get the information out of the BST not done yet*/
-void writeToFile(FILE *fp){
+
+/*For testing purposes only*/
+void print(FILE *fp){
 
         /*Need ot add null check in case nothing has been added*/
         Node * lastWord = list->head;
