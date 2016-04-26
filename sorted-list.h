@@ -12,49 +12,24 @@
 /* Used to act as our data for the list with pointers to its adjacent
  *    data Nodes */
 
+typedef struct Client{
+        char *name;
+        float balance;
+        struct Client_ *left;
+        struct Client_ *right;
+}Client;
 
-
-typedef struct Record_{
-
-        char *fileName;
-        int occurrences;
-        struct Record_ *next;
-        struct Record_ *prev;
-}Record;
-
-
-//typedef struct Node_ Node;
-typedef struct Node_{
-        char *token;
-        Record *head;
-        struct Node_ *parent;
-        struct Node_ *left;
-        struct Node_ *right;
-
-}Node;
-
-
-typedef struct SortedList_{
-        Node *head;
-}SortedListPtr;
+Client createClient(clientName);
+int addClient(char *clientName);
+int insertClient(Client *curr, char* clientName);
+Client accessClient(Client *curr, char* clientName);
 
 
 
-void recordRecord(Record *curr, char *filename);
+
+/*For testing purposes only*/
+void print();
+ 
 
 
 
-void initializeSL();
-int insertToken(Node *node, char *token, char *filename);
-int SLInsert(char *token, char *filename);
-void printNode(Node * curr, FILE *fp, char *lastNode);
-void printRecord(Record * curr, FILE *fp);
-void writeToFile(FILE *fp);
-void basicFileName(char * name, char * revisedName);
-
-Record * sortRecords(Record * head);
-void destroyRecord(Record *record);
-
-
-
-#endif
