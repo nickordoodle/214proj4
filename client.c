@@ -104,6 +104,23 @@ int isValidCommand(char *command){
    message depending on the bank/account operation being done */
 void *serverResponseThread(void *input){
 
+	int sockfd = *(int *)input;
+	while(1){
+		memset(serverBuff, '\0', strlen(serverBuff));
+		int num = recv(sockfd, serverBuff, sizeof(serverBuff), 0);
+		if(num <= 0){
+			printf("ERROR: Connection closed.\n");
+			break;
+		}
+		
+		if(strcmp(serverBuff, "end") == 0){
+			printf("Client closing.\n");
+			exit(0);
+		}
+		if(strlen(serverBuff) == 0){
+			printf("%s\n", serverBuff);
+		}
+	}
 
 	return NULL;	
 }

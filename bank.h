@@ -11,6 +11,13 @@ typedef struct Account_{
         int isInSession;
 } Account;
 
+typedef struct Bank_{
+
+        Account *head;
+        int numAccounts;
+} Bank;
+
+
 int open (char* accountName);
 int start (char* accountName);
 int creditAmount(int amount);
@@ -19,11 +26,6 @@ void balance();
 void finish();
 void exit();
 
-typedef struct Bank_{
-
-        Account *head;
-        int numAccounts;
-} Bank;
 
 int addAccount();
 void printAccounts();
