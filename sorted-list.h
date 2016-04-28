@@ -20,6 +20,11 @@ typedef struct Client{
         struct Client_ *right;
 }Client;
 
+typedef struct Bank{
+        Client *accounts;
+        int numAccounts;
+} Bank;
+
 Client* createClient(char * clientName);
 int addClient(char *clientName);
 int insertClient(Client *curr, char* clientName);
@@ -33,7 +38,7 @@ void print();
 void printRecurs(Client* start);
 
 
- 
+ #endif
 
 
 

@@ -63,16 +63,6 @@ void *userCommandThread(void *input){
 		/* Write the user command to the serverBuffer */
 		strcpy(serverBuff, comm);
 		
-		/* Delimit operator and possible second argument with -1 */
-		while(serverBuff != '\0'){
-			if(isspace(serverBuff[index])){
-				serverBuff[index] = -1;
-				break;
-			}
-
-			index++;
-		}
-
 		//Send the serverBuffer to the server
 		if ((send(sockfd, serverBuff, strlen(serverBuff),0))== -1) {
                 printf("ERROR: Could not send message.\n");
@@ -120,7 +110,7 @@ void *serverResponseThread(void *input){
 			exit(0);
 		}
 
-		printf("SERVER REPONSE: %s", serverBuff);
+		printf("SERVER REPONSE: %s \n", serverBuff);
 		
 	}
 

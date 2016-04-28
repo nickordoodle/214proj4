@@ -11,12 +11,6 @@ typedef struct Account_{
         int isInSession;
 } Account;
 
-typedef struct Bank_{
-
-        Account *head;
-        int numAccounts;
-} Bank;
-
 
 int open (char* accountName);
 int start (char* accountName);
@@ -33,4 +27,4 @@ void printAccounts();
 void* printStatusThread(void* arg);
 void* clientListenerThread(void *arg);
 void* clientSessionThread(void *arg);
-void handleUserCommand(char *command);
+void handleUserCommand(char *command, char *accOrNum, int sockfd);

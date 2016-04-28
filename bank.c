@@ -125,14 +125,15 @@ void* clientListenerThread(void *arg){
 void* clientSessionThread(void *arg){
 
 	int sockfd = *(int *)arg;
-	char clientMsg[100];
+	char clientCommand[100];
+	char firstArg[100];
+	char secondArg[100];
 	/* Compares all the command operations
 	   and performs them appropriately */
 
 	while(1){
 
-		int value = recv(sockfd, clientMsg, sizeof(clientMsg), 0);
-		memset(clientMsg, '\0', strlen(clientMsg));
+		int value = recv(sockfd, clientCommand, sizeof(clientCommand), 0);
 
 		if (value == -1) { 
 			printf("ERROR: Could not receive data from client.\n");
@@ -142,20 +143,41 @@ void* clientSessionThread(void *arg){
 			break;
 		}
 
-		handleUserCommand(clientMsg);
+		sscanf(clientCommand, "%s %s", firstArg, secondArg);
+
+		handleUserCommand(firstArg, secondArg, sockfd);
 	}
 
 	return NULL;
 }
 
 /* This is where the data handling comes in */
-void handleUserCommand(char *command){
+void handleUserCommand(char *command, char *accOrNum, int sockfd){
 
+	char clientMsg[100];
+	memset(clientMsg, '\0', strlen(clientMsg));
 
 	if(strcmp(command, "open")){
 		//Will utilize the open account mutex and attempt to open an account
+
+
+		pthread_mutex_lock(&newAccountMutex);
+
+
+		/* IMPLEMENT: DO BANK ACCOUNT LOGIC HERE */
+
+		sprintf(clientMsg, "Opened test account :)");
+		pthread_mutex_unlock(&newAccountMutex);
+
 	} else if(strcmp(command, "start")){
 		//Starts a 'customer session' for the user
+
+		/*
+		if(pthread_mutex_trylock(&clientMutexes[index]) != 0){
+			sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+			return;	
+		}
+		*/
 	} else if(strcmp(command, "credit")){
 		//Enter a credit amount to a certain account
 	} else if(strcmp(command, "debit")){
@@ -166,7 +188,12 @@ void handleUserCommand(char *command){
 		//Called when the user is done with customer session
 	} else if(strcmp(command, "exit")){
 		//Disconnects the client from the server and ends the client process
+
+
 	}
 
+
+	/* Send back the client a message of what happened */
+	write(sockfd, clientMsg, strlen(clientMsg));
 
 }
