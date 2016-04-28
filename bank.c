@@ -124,21 +124,49 @@ void* clientListenerThread(void *arg){
    which handles all of the customer operations */
 void* clientSessionThread(void *arg){
 
-
+	int sockfd = *(int *)arg;
+	char clientMsg[100];
 	/* Compares all the command operations
 	   and performs them appropriately */
 
 	while(1){
 
-		if ((num = recv(fd, buffer, 1024,0)) == -1) {
+		int value = recv(sockfd, clientMsg, sizeof(clientMsg), 0);
+		memset(clientMsg, '\0', strlen(clientMsg));
+
+		if (value == -1) { 
 			printf("ERROR: Could not receive data from client.\n");
 			break;
-		} else if (num == 0) {
+		} else if (value == 0) {
 			printf("SERVER: Connection closed with client.\n");
 			break;
 		}
 
+		handleUserCommand(clientMsg);
 	}
 
 	return NULL;
+}
+
+/* This is where the data handling comes in */
+void handleUserCommand(char *command){
+
+
+	if(strcmp(command, "open")){
+		//Will utilize the open account mutex and attempt to open an account
+	} else if(strcmp(command, "start")){
+		//Starts a 'customer session' for the user
+	} else if(strcmp(command, "credit")){
+		//Enter a credit amount to a certain account
+	} else if(strcmp(command, "debit")){
+		//Enter a debit amount to a certain account
+	} else if(strcmp(command, "balance")){
+		//Give back the user their balance
+	} else if(strcmp(command, "finish")){
+		//Called when the user is done with customer session
+	} else if(strcmp(command, "exit")){
+		//Disconnects the client from the server and ends the client process
+	}
+
+
 }
