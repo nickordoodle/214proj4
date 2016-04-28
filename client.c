@@ -11,6 +11,8 @@
 #include <pthread.h>
 #include <signal.h>
 #include <ctype.h>
+
+#include "network.h"
 #include "client.h"
 
 #define COMMAND_SIZE 110
@@ -46,7 +48,7 @@ void *userCommandThread(void *input){
 		memset(serverBuff, '\0', strlen(serverBuff));
 		
 		printf("Please enter a command from the following:\n");
-		printf("[open] accountname, [start] accountname [credit] amount, [debit] amountbalance, [finish], [exit]\n");
+		printf("[open] account name, [start] account name [credit] amount, [debit] amount balance, [finish], [exit]\n");
 
 		/* Get the user input */
 		fgets(comm, COMMAND_SIZE, stdin);
@@ -117,9 +119,9 @@ void *serverResponseThread(void *input){
 			printf("Client closing.\n");
 			exit(0);
 		}
-		if(strlen(serverBuff) == 0){
-			printf("%s\n", serverBuff);
-		}
+
+		printf("SERVER REPONSE: %s", serverBuff);
+		
 	}
 
 	return NULL;	
@@ -159,18 +161,21 @@ int main(int argc, char *argv[])
 	pthread_t userCommand;
 	
 	// If the user didn't enter enough arguments, complain and exit
-    if (argc < 3)
+    if (argc  == 2)
 	{
-       fprintf(stderr,"usage %s hostname port\n", argv[0]);
-       exit(0);
-    }
-	
-	
-	
-	/** If the user gave enough arguments, try to use them to get a port number and address **/
 
-	// convert the text representation of the port number given by the user to an int
-	portno = atoi(argv[2]);
+		// convert the text representation of the port number given by the user to an int
+		portno = MYPORT;
+
+    } else if(argc == 3){
+    	portno = atoi(argv[2]);
+
+    } else{
+		fprintf(stderr,"usage 1: %s [hostname] [port] for user designated port\n", argv[0]);
+		fprintf(stderr,"usage 2: [hostname] for default port\n");
+		exit(0);
+    }
+
 	
 	// look up the IP address that matches up with the name given - the name given might
 	//    BE an IP address, which is fine, and store it in the 'serverIPAddress' struct
@@ -217,17 +222,10 @@ int main(int argc, char *argv[])
 		sleep(3);	
 	}	
 
-	
-	/** If we're here, we're connected to the server  **/
-	
-    printf("Please enter the message: ");
-	
 	// zero out the message serverBuffer
     bzero(serverBuff,256);
 
-	// get a message from the client
-    fgets(serverBuff,255,stdin);
-    
+
 	// try to write it out to the server
 	n = write(sockfd,serverBuff,strlen(serverBuff));
 	
@@ -240,13 +238,12 @@ int main(int argc, char *argv[])
 	// sent message to the server, zero the serverBuffer back out to read the server's response
 	bzero(serverBuff,256);
 
-	// read a message from the server into the serverBuffer
-    n = read(sockfd,serverBuff,255);
-	
 	// if we couldn't read from the server for some reason, complain and exit
-    if (n < 0)
+    if ((n = read(sockfd,serverBuff,255)) < 0)
 	{
          error("ERROR reading from socket");
+	} else{
+		printf("%s\n", serverBuff );
 	}
 
 
@@ -257,17 +254,16 @@ int main(int argc, char *argv[])
 	//Sets up a signal handler to finish account sessions on exit
 	signal(SIGINT, sigint_handler);
 	
-
-	//TODO: IMPLEMENT THREAD FUNCTIONS
-	if(pthread_create(&userCommand, 0, userCommandThread, &sockfd) != 0){
-		printf("ERROR: Failure launching command input thread.\n");
-		exit(1);
-	}
 	if(pthread_create(&serverResponse, 0, serverResponseThread, &sockfd) != 0){
 		printf("ERROR: Failure launching response output thread.\n");
 		exit(1);
 	}
 	
+	if(pthread_create(&userCommand, 0, userCommandThread, &sockfd) != 0){
+		printf("ERROR: Failure launching command input thread.\n");
+		exit(1);
+	}
+
 	pthread_join(userCommand, NULL);
 	printf("Client end.\n");
 

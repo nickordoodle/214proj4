@@ -29,3 +29,7 @@ void exit();
 
 int addAccount();
 void printAccounts();
+
+void* printStatusThread(void* arg);
+void* clientListenerThread(void *arg);
+void* clientSessionThread(void *arg);
