@@ -28,23 +28,23 @@ Client currAccount = NULL;
 int main(int argc, char *argv[]){
 
 
-	//The client acceptor thread listens for clients
+	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
-	//The print thread prints the balances every 20 seconds
+	/*The print thread prints the balances every 20 seconds*/
 	pthread_t printStatus;
 	
 
-	//This signal handler will wait for the server to receive SIGINT so it can shut the clients down
-	//signal(SIGINT, sigint_handler);
+	/*This signal handler will wait for the server to receive SIGINT so it can shut the clients down*/
+	/*signal(SIGINT, sigint_handler);*/
 	
 
 
-	//Start the client acceptor thread
+	/*Start the client acceptor thread*/
 	if(pthread_create(&clientListener, 0, clientListenerThread, 0) != 0){
 		printf("ERROR: Could not start server.\n");
 		exit(EXIT_FAILURE);
 	}
-	//Start the printing thread
+	/*Start the printing thread*/
 	pthread_create(&printStatus, 0, printStatusThread, 0);
 	pthread_join(clientListener, NULL);
 	
@@ -173,7 +173,7 @@ void handleClientCommards(char *command, char *accOrNum, int sockfd){
 	
 	
 	if(strcmp(command, "open")){
-		//Will utilize the open account mutex and attempt to open an account
+		/*Will utilize the open account mutex and attempt to open an account*/
 		int result = -1;
 
 		pthread_mutex_lock(&newAccountMutex);
@@ -193,7 +193,7 @@ void handleClientCommards(char *command, char *accOrNum, int sockfd){
 		pthread_mutex_unlock(&newAccountMutex);
 
 	} else if(strcmp(command, "start")){
-		//Starts a 'customer session' for the user
+		/*Starts a 'customer session' for the user*/
 		currAccount = start(accOrNum);
 		
 		if(currAccount == NULL)
@@ -210,7 +210,7 @@ void handleClientCommards(char *command, char *accOrNum, int sockfd){
 		sprintf(clientMsg, "Command %s can only be done after an account session has started.", command);
 	} else if(strcmp(command, "exit")){
 		
-		//Disconnects the client from the server and ends the client process
+		/*Disconnects the client from the server and ends the client process*/
 
 
 	}
@@ -252,7 +252,8 @@ void handleCustomerCommards(char *command, char *accOrNum, int sockfd){
 		sprintf(clientMsg, "Session ended.");
 
 	} else if(strcmp(command, "exit")){
-		//Disconnects the client from the server and ends the client process
+		/*Disconnects the client from the server and ends the client process*/
+		
 
 
 	}
