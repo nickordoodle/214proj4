@@ -6,9 +6,10 @@
 
 
 
-int addAccount();
 void printAccounts();
 void clientSession();
+void exitClient();
+
 
 
 void* printStatusThread(void* arg);
