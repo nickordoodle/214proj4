@@ -16,6 +16,7 @@ typedef struct Client{
         char *name;
         float balance;
         int inuse;
+        int index;
         struct Client_ *left;
         struct Client_ *right;
 }Client;
