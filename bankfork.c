@@ -12,6 +12,7 @@
 #include <time.h>
 #include <signal.h>
 
+
 #include "sorted-list.h"
 #include "bank.h"
 #include "client.h"
@@ -21,6 +22,8 @@
    and only one account to open at a time  */
 pthread_mutex_t clientMutexes[20];
 pthread_mutex_t newAccountMutex;
+
+Client currAccount = NULL;
 
 int main(int argc, char *argv[]){
 
@@ -84,6 +87,7 @@ void* clientListenerThread(void *arg){
    	int newClientSock = 0;
    	char outputMsg[100];
    	struct sockaddr_in serverAddressInfo;
+        pid_t  pid;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -107,12 +111,16 @@ void* clientListenerThread(void *arg){
 		write(newClientSock, outputMsg, strlen(outputMsg));
 
 		/* The thread to be created for new clients */
-		pthread_t clientSession;
+		fork();
+		if(pid == 0)
+			clientSession();
+		/* potentially should store */	
 		
-		if(pthread_create(&clientSession, 0, clientSessionThread, &newClientSock) ){
+
+	/*	if(pthread_create(&clientSession, 0, clientSessionThread, &newClientSock) ){
 			printf("ERROR: Could not launch client session thread.\n");
 			sleep(1);
-		}	
+		}*/	
 
 	}
 
@@ -120,15 +128,14 @@ void* clientListenerThread(void *arg){
 }
 
 
-/* This will essentially be our customer session thread/function
+/* This will essentially be our customer session function
    which handles all of the customer operations */
-void* clientSessionThread(void *arg){
-
+void clientSession(){
+	/*Shoudlnt it be command + extra <= 100?*/
 	int sockfd = *(int *)arg;
 	char clientCommand[100];
 	char firstArg[100];
 	char secondArg[100];
-	int accountOpen = 0;
 	/* Compares all the command operations
 	   and performs them appropriately */
 
@@ -145,48 +152,105 @@ void* clientSessionThread(void *arg){
 		}
 
 		sscanf(clientCommand, "%s %s", firstArg, secondArg);
-
-		handleUserCommand(firstArg, secondArg, sockfd, accountOpen);
+		/*if an ac*/
+		if(currAccount == NULL)
+			handleClientCommands(firstArg, secondArg, sockfd);
+		else
+			handleCustomerCommands(firstArg, secondArg, sockfd);
 	}
 
 	return NULL;
 }
 
 /* This is where the data handling comes in */
-void handleUserCommand(char *command, char *accOrNum, int sockfd){
-
+void handleClientCommards(char *command, char *accOrNum, int sockfd){
 	char clientMsg[100];
-	memset(clientMsg, '\0', strlen(clientMsg));
 
+
+	
+	memset(clientMsg, '\0', strlen(clientMsg));
+	
+	
+	
 	if(strcmp(command, "open")){
 		//Will utilize the open account mutex and attempt to open an account
-
+		int result = -1;
 
 		pthread_mutex_lock(&newAccountMutex);
  
 
-		/* IMPLEMENT: DO BANK ACCOUNT LOGIC HERE */
-
-		sprintf(clientMsg, "Opened test account :)");
+		result = open(accOrNum);
+		
+		else if(result == 0)
+			sprintf(clientMsg, "Account successfully opened\n");
+		else if(result == 1)
+			sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
+		else if(result == 2)
+			sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
+		else
+			sprintf(clientMsg, "Function open has failed\n");
+		
 		pthread_mutex_unlock(&newAccountMutex);
 
 	} else if(strcmp(command, "start")){
 		//Starts a 'customer session' for the user
-
-		/*
-		if(pthread_mutex_trylock(&clientMutexes[index]) != 0){
+		currAccount = start(accOrNum);
+		
+		if(currAccount == NULL)
+			sprintf(clientMsg, "Unable to open account: invalid account name");
+		else
+			sprintf(clientMsg, "Account %s successfully opened",accOrNum);
+		
+		if(pthread_mutex_trylock(&clientMutexes[currAccount->index]) != 0){
 			sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
 			return;	
 		}
-		*/
+		
+	} else if(strcmp(command, "credit") || strcmp(command, "debit") || (strcmp(command, "balance") || strcmp(command, "finish")){
+		sprintf(clientMsg, "Command %s can only be done after an account session has started.", command);
+	} else if(strcmp(command, "exit")){
+		
+		//Disconnects the client from the server and ends the client process
+
+
+	}
+
+
+	/* Send back the client a message of what happened */
+	write(sockfd, clientMsg, strlen(clientMsg));
+
+}
+
+void handleCustomerCommards(char *command, char *accOrNum, int sockfd){
+
+	char clientMsg[100];
+	memset(clientMsg, '\0', strlen(clientMsg));
+	
+
+	if(strcmp(command, "open")){
+		sprintf(clientMsg, "Unable to open account while in session");
+	} else if(strcmp(command, "start")){
+		sprintf(clientMsg, "Unable to open start a second session.");
 	} else if(strcmp(command, "credit")){
-		//Enter a credit amount to a certain account
+		float change = atof(accOrNum);
+		currAccount->balance += change;
+		sprintf(clientMsg, "Balance has been updated.");
 	} else if(strcmp(command, "debit")){
-		//Enter a debit amount to a certain account
+		float change = atof(accOrNum);
+		if(currAccount->balance >= change){
+			currAccount->balance -= change;
+			sprintf(clientMsg, "Balance has been updated.");
+		}else
+			sprintf(clientMsg, "Unable to complete transaction: Debit larger than balance.");
 	} else if(strcmp(command, "balance")){
-		//Give back the user their balance
+		sprintf(clientMsg, "Current Balance: %f", currAccount->balance);
 	} else if(strcmp(command, "finish")){
-		//Called when the user is done with customer session
+		int index = currAccount->index;
+		currAccount->inuse = 0;
+		currAccount = NULL;
+		pthread_mutex_unlock(&clientMutexes[index]);
+		sprintf(clientMsg, "Session ended.");
+
 	} else if(strcmp(command, "exit")){
 		//Disconnects the client from the server and ends the client process
 
