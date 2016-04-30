@@ -18,7 +18,7 @@ Client* createClient(char *clientName){
 }
 
 /*returns 1 if successful 0 if not*/
-int addClient(char *clientName){
+int open(char *clientName){
       Client *newClient = createClient(clientName);
       Client *curr = NULL;
 
@@ -59,7 +59,7 @@ int insertClient(Client *curr, char* clientName){
 }
 
 /*returns the Client struct if found returns NULL if not found*/
-Client* accessClient(Client *curr, char* clientName){
+Client* start(Client *curr, char* clientName){
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
@@ -67,7 +67,7 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> left  == NULL){
                 return NULL;
         } else{
-            return accessClient(curr->left, clientName);
+            return start(curr->left, clientName);
         }
     }
 
@@ -76,11 +76,13 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> right == NULL){
                 return NULL;
         } else{
-           return accessClient(curr->right, clientName);
+           return start(curr->right, clientName);
         }
 
     }
-    /* Client has already previously occurred */
+    /* Client has previously been opened */
+    if(curr->inuse == 1)
+        return 0;
    curr->inuse = 1;
  return curr;
 }
