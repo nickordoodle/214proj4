@@ -13,24 +13,25 @@ Client* createClient(char *clientName){
         strcpy(newClient -> name, clientName);
         newClient->balance = 0;
         newClient->inuse = 0;
+        newClient->index = clientCount;
+        clientCount++;
 
         return newClient;
 }
 
-/*returns 1 if successful 0 if not*/
+/*returns 0 if successful 1 if already reached max clients 2 if account with that name already exsits*/
 int open(char *clientName){
       Client *newClient = createClient(clientName);
       Client *curr = NULL;
 
       if(clientCount == 20){
-              return 0;
+              return 1;
       }
 
-      clientCount++;
 
        return insertClient(head, clientName);
 }
-/*returns 1 if successful 0 if client name already exsisted*/
+/*returns 0 if successful 2 if client name already exsisted*/
 int insertClient(Client *curr, char* clientName){
         int compareVal = strcmp(curr->name, clientName);
 
@@ -38,7 +39,7 @@ int insertClient(Client *curr, char* clientName){
     if(compareVal < 0){
         if(curr -> left  == NULL){
                 curr -> left = createClient(clientName);
-                return 1;
+                return 0;
         } else{
             return insertClient(curr->left, clientName);
  }
@@ -48,14 +49,14 @@ int insertClient(Client *curr, char* clientName){
     else if (compareVal > 0){
         if(curr -> right == NULL){
                 curr -> right = createClient(clientName);
-                return 1;
+                return 0;
         } else{
            return insertClient(curr->right, clientName);
         }
 
     }
     /* Client has already previously occurred */
-   return 0;
+   return 2;
 }
 
 /*returns the Client struct if found returns NULL if not found*/
@@ -82,8 +83,8 @@ Client* start(Client *curr, char* clientName){
     }
     /* Client has previously been opened */
     if(curr->inuse == 1)
-        return 0;
-   curr->inuse = 1;
+        return NULL;
+   curr->inuse++;
  return curr;
 }
 
