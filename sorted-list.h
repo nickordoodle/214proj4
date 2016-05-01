@@ -31,7 +31,9 @@ sorted-list has these as global variables
 Client* createClient(char * clientName);
 int open(char *clientName);
 int insertClient(Client *curr, char* clientName);
-Client* start(Client *curr, char* clientName);
+Client* start(char* clientName);
+Client* accessClient(Client *curr, char* clientName);
+
 
 
 
