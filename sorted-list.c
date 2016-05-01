@@ -21,8 +21,6 @@ Client* createClient(char *clientName){
 
 /*returns 0 if successful 1 if already reached max clients 2 if account with that name already exsits*/
 int open(char *clientName){
-      Client *newClient = createClient(clientName);
-      Client *curr = NULL;
 
       if(clientCount == 20){
               return 1;
@@ -59,7 +57,7 @@ int insertClient(Client *curr, char* clientName){
    return 2;
 }
 Client* start(char* clientName){
-        accessClient(head,cleintName);       
+        accessClient(head,clientName);       
 }
 
 
@@ -72,7 +70,7 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> left  == NULL){
                 return NULL;
         } else{
-            return start(curr->left, clientName);
+            return accessClient(curr->left, clientName);
         }
     }
 
@@ -81,7 +79,7 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> right == NULL){
                 return NULL;
         } else{
-           return start(curr->right, clientName);
+           return accessClient(curr->right, clientName);
         }
 
     }
@@ -112,9 +110,9 @@ void printRecurs(Client* start){
         if(curr->left != NULL)
                 return printRecurs(curr->left);
         if(curr->inuse == 0)
-                printf("Client:%s: \n\tBalance:%s\n\tIn use: no\n",curr->name,curr->balance);
+                printf("Client:%s: \n\tBalance:%f\n\tIn use: no\n",curr->name,curr->balance);
         else
-                printf("Client:%s: \n\tBalance:%s\n\tIn use: yes\n",curr->name,curr->balance);
+                printf("Client:%s: \n\tBalance:%f\n\tIn use: yes\n",curr->name,curr->balance);
 
         if(curr->right != NULL)
                 return printRecurs(curr->right);
