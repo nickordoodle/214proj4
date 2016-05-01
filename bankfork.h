@@ -15,7 +15,7 @@ void startfnc(char * clientMsg, char* acc);
 void credit(char * clientMsg, char* num);
 void debit(char * clientMsg, char* num);
 void balance(char * clientMsg);
-void finish(char * client Msg);
+void finish(char * clientMsg);
 void exitClient(char * clientMsg);
 
 
