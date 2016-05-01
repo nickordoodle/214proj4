@@ -12,7 +12,7 @@
 /* Used to act as our data for the list with pointers to its adjacent
  *    data Nodes */
 
-typedef struct Client{
+typedef struct Client_{
         char *name;
         float balance;
         int inuse;
