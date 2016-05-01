@@ -11,6 +11,7 @@
 #include <semaphore.h>
 #include <time.h>
 #include <signal.h>
+#include <sys/mman.h>
 
 
 #include "sorted-list.h"
@@ -20,13 +21,14 @@
 
 /* Only 20 clients can be serviced at one time
    and only one account to open at a time  */
-pthread_mutex_t clientMutexes[20];
-pthread_mutex_t newAccountMutex;
 
+
+Map * globalVar = NULL;
 Client * currAccount = NULL;
 
 int main(int argc, char *argv[]){
 
+	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
 
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
@@ -59,7 +61,7 @@ void* printStatusThread(void* arg){
 	while(1){
 
 		printf("SERVER:\nCurrent balances:\n");
-		pthread_mutex_lock(&newAccountMutex);
+		pthread_mutex_lock(&globalVar->newAccountMutex);
 
 		/* TO IMPLEMENT: PRINT STATUS OF ALL ACCOUNTS HERE */
 
@@ -67,7 +69,7 @@ void* printStatusThread(void* arg){
 
 
 
-		pthread_mutex_unlock(&newAccountMutex);
+		pthread_mutex_unlock(&globalVar->newAccountMutex);
 
 		/* Control this output to every 20 seconds */
 		sleep(20);
@@ -166,7 +168,7 @@ void openfnc(char * clientMsg, char* acc){
 
         int result = -1;
 
-                pthread_mutex_lock(&newAccountMutex);
+                pthread_mutex_lock(&globalVar->newAccountMutex);
 
 
                 result = open(acc);
@@ -196,7 +198,7 @@ void startfnc(char * clientMsg, char* acc){
         else
                 sprintf(clientMsg, "Account %s successfully opened",acc);
 
-        if(pthread_mutex_trylock(&clientMutexes[currAccount->index]) != 0){
+        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0){
                 sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
                 return;
         }
@@ -243,7 +245,7 @@ void finish(char * clientMsg){
                 int index = currAccount->index;
                 currAccount->inuse = 0;
  currAccount = NULL;
-                pthread_mutex_unlock(&clientMutexes[index]);
+                pthread_mutex_unlock(&globalVar->clientMutexes[index]);
                 sprintf(clientMsg, "Session ended.");
 
                 return;
@@ -264,7 +266,7 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
         if(strcmp(command, "open")){
                 /*Will utilize the open account mutex and attempt to open an account*/
 
-                pthread_mutex_unlock(&newAccountMutex);
+                pthread_mutex_unlock(&globalVar->newAccountMutex);
                 openfnc(clientMsg, accOrNum);
 
         } else if(strcmp(command, "start")){
