@@ -23,7 +23,7 @@
 pthread_mutex_t clientMutexes[20];
 pthread_mutex_t newAccountMutex;
 
-Client currAccount = NULL;
+Client * currAccount = NULL;
 
 int main(int argc, char *argv[]){
 
@@ -152,11 +152,8 @@ void clientSession(void *arg){
 		}
 
 		sscanf(clientCommand, "%s %s", firstArg, secondArg);
-		/*if an ac*/
-		if(currAccount == NULL)
-			handleClientCommands(firstArg, secondArg, sockfd);
-		else
-			handleCustomerCommands(firstArg, secondArg, sockfd);
+
+		handleUserCommands(firstArg, secondArg, sockfd);
 	}
 
 	return;
