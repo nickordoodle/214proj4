@@ -58,9 +58,13 @@ int insertClient(Client *curr, char* clientName){
     /* Client has already previously occurred */
    return 2;
 }
+Client* start(char* clientName){
+        accessClient(head,cleintName);       
+}
+
 
 /*returns the Client struct if found returns NULL if not found*/
-Client* start(Client *curr, char* clientName){
+Client* accessClient(Client *curr, char* clientName){
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
