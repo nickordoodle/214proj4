@@ -159,143 +159,142 @@ void clientSession(void *arg){
 			handleCustomerCommands(firstArg, secondArg, sockfd);
 	}
 
-	return NULL;
-}
-void open(char * clientMsg, char* acc){
-	if(currAccount == NULL){
-		sprintf(clientMsg, "Unable to open account while in session");
-			return;
-	}
-
-	int result = -1;
-
-		pthread_mutex_lock(&newAccountMutex);
- 
-
-		result = open(accOrNum);
-		
-		if(result == 0)
-			sprintf(clientMsg, "Account successfully opened\n");
-		else if(result == 1)
-			sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
-		else if(result == 2)
-			sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
-		else
-			sprintf(clientMsg, "Function open has failed\n");
-			
 	return;
 }
+void openfnc(char * clientMsg, char* acc){
+        if(currAccount == NULL){
+                sprintf(clientMsg, "Unable to open account while in session");
+                        return;
+        }
 
-void start(char * clientMsg, char* acc){
-	if(currAccount == NULL){
-		sprintf(clientMsg, "Unable to open start a second session.");
-		return;
-	}
+        int result = -1;
 
-	currAccount = start(accOrNum);
-		
-	if(currAccount == NULL)
-		sprintf(clientMsg, "Unable to open account: invalid account name");
-	else
-		sprintf(clientMsg, "Account %s successfully opened",accOrNum);
-	
-	if(pthread_mutex_trylock(&clientMutexes[currAccount->index]) != 0){
-		sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
-		return;
-	}
-	return;
+                pthread_mutex_lock(&newAccountMutex);
+
+
+                result = open(acc);
+
+                if(result == 0)
+                        sprintf(clientMsg, "Account successfully opened\n");
+                else if(result == 1)
+                        sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
+                else if(result == 2)
+                        sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
+                else
+                        sprintf(clientMsg, "Function open has failed\n");
+
+        return;
+}
+
+void startfnc(char * clientMsg, char* acc){
+        if(currAccount == NULL){
+                sprintf(clientMsg, "Unable to open start a second session.");
+                return;
+        }
+
+        currAccount = start(acc);
+
+        if(currAccount == NULL)
+                sprintf(clientMsg, "Unable to open account: invalid account name");
+        else
+                sprintf(clientMsg, "Account %s successfully opened",acc);
+
+        if(pthread_mutex_trylock(&clientMutexes[currAccount->index]) != 0){
+                sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+                return;
+        }
+        return;
 }
 
 void credit(char * clientMsg, char* num){
-	if(currAccount == NULL){
-		float change = atof(num);
-		currAccount->balance += change;
-		sprintf(clientMsg, "Balance has been updated.");
-	
-		return;
-	}
-	sprintf(clientMsg, "Command [credit] can only be done after an account session has started.");
+        if(currAccount == NULL){
+                float change = atof(num);
+                currAccount->balance += change;
+                sprintf(clientMsg, "Balance has been updated.");
 
-	return;
+                return;
+        }
+        sprintf(clientMsg, "Command [credit] can only be done after an account session has started.");
+
+        return;
 }
 void debit(char * clientMsg, char* num){
-	if(currAccount == NULL){
-		float change = atof(num);
-		if(currAccount->balance >= change){
-			currAccount->balance -= change;
-			sprintf(clientMsg, "Balance has been updated.");
-		}else
-			sprintf(clientMsg, "Unable to complete transaction: Debit larger than balance.");
-		return;
-	}
-	sprintf(clientMsg, "Command [debit] can only be done after an account session has started.");
+        if(currAccount == NULL){
+                float change = atof(num);
+                if(currAccount->balance >= change){
+                        currAccount->balance -= change;
+                        sprintf(clientMsg, "Balance has been updated.");
+                }else
+                        sprintf(clientMsg, "Unable to complete transaction: Debit larger than balance.");
+                return;
+        }
+        sprintf(clientMsg, "Command [debit] can only be done after an account session has started.");
 
-	return;
+        return;
 }
 void balance(char * clientMsg){
-	if(currAccount == NULL){
-		sprintf(clientMsg, "Current Balance: %f", currAccount->balance);
-		return;
-	}
-	sprintf(clientMsg, "Command [balance] can only be done after an account session has started.");
+        if(currAccount == NULL){
+                sprintf(clientMsg, "Current Balance: %f", currAccount->balance);
+                return;
+        }
+        sprintf(clientMsg, "Command [balance] can only be done after an account session has started.");
 
-	return;
+        return;
 }
-void finish(char * client Msg){
-	if(currAccount == NULL){
-		int index = currAccount->index;
-		currAccount->inuse = 0;
-		currAccount = NULL;
-		pthread_mutex_unlock(&clientMutexes[index]);
-		sprintf(clientMsg, "Session ended.");
+void finish(char * clientMsg){
+        if(currAccount == NULL){
+                int index = currAccount->index;
+                currAccount->inuse = 0;
+ currAccount = NULL;
+                pthread_mutex_unlock(&clientMutexes[index]);
+                sprintf(clientMsg, "Session ended.");
 
-		return;
-	}
-	sprintf(clientMsg, "Command [finish] can only be done after an account session has started.");
+                return;
+        }
+        sprintf(clientMsg, "Command [finish] can only be done after an account session has started.");
 
-	return;
+        return;
 }
 void exitClient(char * clientMsg);
 
 
-	/* This is where the data handling comes in */
+        /* This is where the data handling comes in */
 void handleUserCommands(char *command, char *accOrNum, int sockfd){
-	char clientMsg[100];
+        char clientMsg[100];
 
-	memset(clientMsg, '\0', strlen(clientMsg));
-	
-	if(strcmp(command, "open")){
-		/*Will utilize the open account mutex and attempt to open an account*/
-		
-		pthread_mutex_unlock(&newAccountMutex);
-		open(clientMsg, accOrNum);
+        memset(clientMsg, '\0', strlen(clientMsg));
 
-	} else if(strcmp(command, "start")){
-		/*Starts a 'customer session' for the user*/
-		start(clientMsg, accOrNum);	
-		
-		
-	} else if(strcmp(command, "credit")){
-		credit(clientMsg, accOrNum);	
+        if(strcmp(command, "open")){
+                /*Will utilize the open account mutex and attempt to open an account*/
 
-	} else if(strcmp(command, "debit")){
-		debit(clientMsg, accOrNum);	
+                pthread_mutex_unlock(&newAccountMutex);
+                openfnc(clientMsg, accOrNum);
 
-	} else if(strcmp(command, "balance")){
-		balance(clientMsg);	
-
-	} else if(strcmp(command, "finish")){
-		finish(clientMsg);	
-	} else if(strcmp(command, "exit")){
-		
-		/*Disconnects the client from the server and ends the client process*/
+        } else if(strcmp(command, "start")){
+                /*Starts a 'customer session' for the user*/
+                startfnc(clientMsg, accOrNum);
 
 
-	}
+        } else if(strcmp(command, "credit")){
+                credit(clientMsg, accOrNum);
+
+        } else if(strcmp(command, "debit")){
+                debit(clientMsg, accOrNum);
+
+        } else if(strcmp(command, "balance")){
+                balance(clientMsg);
+
+        } else if(strcmp(command, "finish")){
+		finish(clientMsg);
+        } else if(strcmp(command, "exit")){
+
+                /*Disconnects the client from the server and ends the client process*/
 
 
-	/* Send back the client a message of what happened */
-	write(sockfd, clientMsg, strlen(clientMsg));
+        }
+
+
+        /* Send back the client a message of what happened */
+        write(sockfd, clientMsg, strlen(clientMsg));
 
 }
-
