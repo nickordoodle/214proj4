@@ -127,7 +127,7 @@ void* clientListenerThread(void *arg){
 
                 /* This is where the child will execute code */
                 printf("Created a child process for a new client.  The process ID is: %d\n", getpid());
-                clientSession();
+                clientSession(newClientSock);
 
             } 
 
@@ -153,9 +153,9 @@ void* clientListenerThread(void *arg){
 
 /* This will essentially be our customer session function
    which handles all of the customer operations */
-void clientSession(void *arg){
+void clientSession(int arg){
 	/*Shoudlnt it be command + extra <= 100?*/
-	int sockfd = *(int *)arg;
+	int sockfd = arg;
 	char clientCommand[100];
 	char firstArg[100];
 	char secondArg[100];
@@ -166,17 +166,23 @@ void clientSession(void *arg){
 
 		int value = recv(sockfd, clientCommand, sizeof(clientCommand), 0);
 
+        /*
 		if (value == -1) { 
 			printf("ERROR: Could not receive data from client.\n");
 			break;
-		} else if (value == 0) {
+
+		} else*/
+         if (value == 0) {
 			printf("SERVER: Connection closed with client.\n");
 			break;
-		}
+		} else if(value > 0){
 
-		sscanf(clientCommand, "%s %s", firstArg, secondArg);
+            sscanf(clientCommand, "%s %s", firstArg, secondArg);
 
-		handleUserCommands(firstArg, secondArg, sockfd);
+            handleUserCommands(firstArg, secondArg, sockfd);
+        }
+
+
 	}
 
 	return;
