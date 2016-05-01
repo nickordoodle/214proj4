@@ -57,7 +57,7 @@ int insertClient(Client *curr, char* clientName){
    return 2;
 }
 Client* start(char* clientName){
-        accessClient(head,clientName);       
+    return accessClient(head,clientName);       
 }
 
 
@@ -86,8 +86,8 @@ Client* accessClient(Client *curr, char* clientName){
     /* Client has previously been opened */
     if(curr->inuse == 1)
         return NULL;
-   curr->inuse++;
- return curr;
+    curr->inuse = 1;
+    return curr;
 }
 
 
@@ -96,7 +96,7 @@ Client* accessClient(Client *curr, char* clientName){
 
 void print(){
         if(clientCount == 0){
-                printf("No clients\n");
+                printf("No client accounts are opened in the bank at this time.\n");
                 return;
         }
         printRecurs(head);

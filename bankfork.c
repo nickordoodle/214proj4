@@ -14,7 +14,7 @@
 
 
 #include "sorted-list.h"
-#include "bank.h"
+#include "bankfork.h"
 #include "client.h"
 #include "network.h"
 
@@ -64,7 +64,7 @@ void* printStatusThread(void* arg){
 		/* TO IMPLEMENT: PRINT STATUS OF ALL ACCOUNTS HERE */
 
 
-
+        print();
 
 
 		pthread_mutex_unlock(&newAccountMutex);
@@ -87,7 +87,9 @@ void* clientListenerThread(void *arg){
    	int newClientSock = 0;
    	char outputMsg[100];
    	struct sockaddr_in serverAddressInfo;
-        pid_t  pid;
+
+    //WHAT TO INITIALIZE TO??
+    pid_t  pid = -1;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -111,9 +113,11 @@ void* clientListenerThread(void *arg){
 		write(newClientSock, outputMsg, strlen(outputMsg));
 
 		/* The thread to be created for new clients */
-		fork();
-		if(pid == 0)
+		pid = fork();
+		if(pid == 0){
+            printf("Created a child process for a new client.\n");
 			clientSession();
+        }
 		/* potentially should store */	
 		
 
@@ -166,24 +170,27 @@ void openfnc(char * clientMsg, char* acc){
 
         int result = -1;
 
-                pthread_mutex_lock(&newAccountMutex);
+        pthread_mutex_lock(&newAccountMutex);
 
 
-                result = open(acc);
+        result = open(acc);
 
-                if(result == 0)
-                        sprintf(clientMsg, "Account successfully opened\n");
-                else if(result == 1)
-                        sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
-                else if(result == 2)
-                        sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
-                else
-                        sprintf(clientMsg, "Function open has failed\n");
+        if(result == 0)
+                sprintf(clientMsg, "Account successfully opened\n");
+        else if(result == 1)
+                sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
+        else if(result == 2)
+                sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
+        else
+                sprintf(clientMsg, "Function open has failed\n");
+
+        pthread_mutex_unlock(&newAccountMutex);
 
         return;
 }
 
 void startfnc(char * clientMsg, char* acc){
+
         if(currAccount == NULL){
                 sprintf(clientMsg, "Unable to open start a second session.");
                 return;
@@ -229,6 +236,8 @@ void debit(char * clientMsg, char* num){
 
         return;
 }
+
+
 void balance(char * clientMsg){
         if(currAccount == NULL){
                 sprintf(clientMsg, "Current Balance: %f", currAccount->balance);
@@ -238,11 +247,14 @@ void balance(char * clientMsg){
 
         return;
 }
+
+
 void finish(char * clientMsg){
+
         if(currAccount == NULL){
                 int index = currAccount->index;
                 currAccount->inuse = 0;
- currAccount = NULL;
+                currAccount = NULL;
                 pthread_mutex_unlock(&clientMutexes[index]);
                 sprintf(clientMsg, "Session ended.");
 
@@ -252,7 +264,15 @@ void finish(char * clientMsg){
 
         return;
 }
-void exitClient(char * clientMsg);
+
+
+
+void exitClient(char * clientMsg){
+
+    sprintf(clientMsg, "end");     
+
+
+}
 
 
         /* This is where the data handling comes in */
@@ -262,31 +282,37 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
         memset(clientMsg, '\0', strlen(clientMsg));
 
         if(strcmp(command, "open")){
-                /*Will utilize the open account mutex and attempt to open an account*/
+                
+            /*Will utilize the open account mutex and attempt to open an account*/
 
-                pthread_mutex_unlock(&newAccountMutex);
-                openfnc(clientMsg, accOrNum);
+            openfnc(clientMsg, accOrNum);
 
         } else if(strcmp(command, "start")){
-                /*Starts a 'customer session' for the user*/
-                startfnc(clientMsg, accOrNum);
+                
+            /*Starts a 'customer session' for the user*/
+            startfnc(clientMsg, accOrNum);
 
 
         } else if(strcmp(command, "credit")){
-                credit(clientMsg, accOrNum);
+                
+            credit(clientMsg, accOrNum);
 
         } else if(strcmp(command, "debit")){
-                debit(clientMsg, accOrNum);
+                
+            debit(clientMsg, accOrNum);
 
         } else if(strcmp(command, "balance")){
-                balance(clientMsg);
+                
+            balance(clientMsg);
 
         } else if(strcmp(command, "finish")){
-		finish(clientMsg);
+	           
+           finish(clientMsg);
+        
         } else if(strcmp(command, "exit")){
 
-                /*Disconnects the client from the server and ends the client process*/
-
+            /*Disconnects the client from the server and ends the client process*/
+            exitClient(clientMsg);
 
         }
 

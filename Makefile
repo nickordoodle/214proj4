@@ -1,25 +1,28 @@
 COMPILER = gcc
-CFLAGS = -Wall -g
-CFLAGS2 = -g
+CFLAGS = -Wall -g 
+CFLAGS2 = -lpthread
 
-all: bank 
+all: client bankfork 
 .PHONY: all
 .PHONY: clean
-
-sorted-list.o: sorted-list.c sorted-list.h
-	$(COMPILER) $(CFLAGS) -c sorted-list.c
 
 tokenizer.o: tokenizer.c tokenizer.h
 	$(COMPILER) $(CFLAGS) -c tokenizer.c
 
-bank.o: bank.c bank.h
-	$(COMPILER) $(CFLAGS) -c bank.c
+sorted-list.o: sorted-list.c sorted-list.h
+	$(COMPILER) $(CFLAGS) -c sorted-list.c
 
-main.o: main.c main.h
-	$(COMPILER) $(CFLAGS) -c main.c
+client.o: client.c client.h
+	$(COMPILER) $(CFLAGS) -c client.c
 
-bank: main.o bank.o tokenizer.o sorted-list.o
-	$(COMPILER) $(CFLAGS) -o bank main.o tokenizer.o bank.o sorted-list.o
+bankfork.o: bankfork.c bankfork.h
+	$(COMPILER) $(CFLAGS) -c bankfork.c
+
+client: client.o tokenizer.o sorted-list.o 
+	$(COMPILER) $(CFLAGS) -o client client.o tokenizer.o sorted-list.o $(CFLAGS2)
+
+bankfork: bankfork.o sorted-list.o
+	$(COMPILER) $(CFLAGS) -o bankfork bankfork.o sorted-list.o $(CFLAGS2)
 
 clean: 
-	rm -f *.o bank
+	rm -f *.o client bankfork

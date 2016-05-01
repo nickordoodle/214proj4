@@ -43,7 +43,6 @@ void *userCommandThread(void *input){
 
 		char comm[COMMAND_SIZE];
 		memset(comm, '\0', COMMAND_SIZE);
-		int index = 0;
 		
 		memset(serverBuff, '\0', strlen(serverBuff));
 		
