@@ -21,6 +21,6 @@ void exitClient(char * clientMsg);
 
 void* printStatusThread(void* arg);
 void* clientListenerThread(void *arg);
-void handleuserCommands(char *command, char *accOrNum, int sockfd);
+void handleUserCommands(char *command, char *accOrNum, int sockfd);
 
 
