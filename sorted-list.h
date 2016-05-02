@@ -21,25 +21,17 @@ typedef struct Client_{
         struct Client_ *right;
 }Client;
 
-/*typedef struct Bank{
-        Client *accounts;
-        int numAccounts;
-} Bank;
-sorted-list has these as global variables
-*/ 
 
-Client* createClient(char * clientName);
-int open(char *clientName);
-int insertClient(Client *curr, char* clientName);
-Client* start(char* clientName);
-Client* accessClient(Client *curr, char* clientName);
+Client* createClient(char * clientName, int clientCount);
+int insertClient(Client *curr,int clientCount, char* clientName);
+Client* start(Client *curr, int clientCount, char* clientName);
 
 
 
 
 
 
-void print();
+void print(Client* head);
 void printRecurs(Client* start);
 
 
