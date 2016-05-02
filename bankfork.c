@@ -67,9 +67,6 @@ void* printStatusThread(void* arg){
 		printf("SERVER:\nCurrent balances:\n");
 		pthread_mutex_lock(&globalVar->newAccountMutex);
 
-		/* TO IMPLEMENT: PRINT STATUS OF ALL ACCOUNTS HERE */
-
-
         print(globalVar->head);
 
 
@@ -134,12 +131,7 @@ void* clientListenerThread(void *arg){
 
             } 
 
-<<<<<<< HEAD
-=======
-            /* This is where the parent process is */
-            printf("%d\n", getpid() );
 
->>>>>>> fdf60d0090eff0c067c02943ff10a93ece23a269
         }
 		
 		
@@ -153,11 +145,11 @@ void* clientListenerThread(void *arg){
 
 	return NULL;
 }
-
+/*
 void childprocess(int arg){
-	thread read 
+	//thread read 
 	clientSession(int arg);
-}
+} */
 
 
 /* This will essentially be our customer session function
@@ -203,7 +195,7 @@ void clientSession(int arg){
 }
 
 
-void openfnc(char * clientMsg, char* acc){
+void openfnc(char * clientMsg, char *acc){
 
         if(currAccount != NULL){
                 sprintf(clientMsg, "Unable to open account while in session");
@@ -221,14 +213,14 @@ void openfnc(char * clientMsg, char* acc){
 	
 
 	
-        result = open(globalVar->head,globalVar->accountCount,acc);
  	
- 	if(globalVar->head == NULL){
+        if(globalVar->head == NULL){
                 globalVar->head = createClient(acc, globalVar->accountCount);
-                globalVar->accountCount++;
                 pthread_mutex_unlock(&globalVar->newAccountMutex);
-                sprintf(clientMsg, "Account successfully opened\n");
-                return;
+                result = 0;
+        } else{
+            result = open(globalVar->head,globalVar->accountCount,acc);
+
         }
 
         if(result == 0){
@@ -247,24 +239,28 @@ void openfnc(char * clientMsg, char* acc){
 
 void startfnc(char * clientMsg, char* acc){
 
-        if(currAccount != NULL){
-                sprintf(clientMsg, "Unable to open start a second session.");
-                return;
-        }
+    if(currAccount != NULL){
+            sprintf(clientMsg, "Unable to open start a second session.");
+            return;
+    }
+
 	if(globalVar->head == NULL){
 		sprintf(clientMsg, "Unable to open account: invalid account name");
 		return;
 	}
-        currAccount = start(globalVar->head,globalVar->accountCount,acc);
+    
+    currAccount = start(globalVar->head,globalVar->accountCount,acc);
 
 
-        if(currAccount == NULL)
-            sprintf(clientMsg, "Unable to open account: invalid account name");
-        else
-            sprintf(clientMsg, "Account %s successfully opened",acc);
+    if(currAccount == NULL){
+        sprintf(clientMsg, "Unable to open account: invalid account name");
+    } else if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0){
+        sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+    }
+    else {
+        sprintf(clientMsg, "Account %s successfully opened",acc);
+    }
 
-        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0)
-            sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
                 
         
         

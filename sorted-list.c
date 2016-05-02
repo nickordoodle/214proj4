@@ -19,7 +19,7 @@ Client* createClient(char *clientName, int clientCount){
 /*returns 0 if successful 2 if client name already exsisted*/
 int open(Client *curr,int clientCount, char* clientName){
     
-
+    
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */

@@ -40,7 +40,7 @@ void *userCommandThread(void *input){
 	int sockfd = *(int *)input;
 
 	printf("Please enter a command from the following:\n");
-	printf("[open] account name, [start] account name [credit] amount, [debit] amount balance, [finish], [exit]\n");
+	printf("[open] account name, [start] account name [credit] amount, [debit] amount, [balance], [finish], [exit]\n");
 
 	while(1){
 
