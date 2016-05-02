@@ -15,7 +15,7 @@ typedef struct Map__{
 
 
 void printAccounts();
-void clientSession();
+void clientSession(int arg);
 void exitClient();
 
 void print();
