@@ -234,7 +234,7 @@ void startfnc(char * clientMsg, char* acc){
 		sprintf(clientMsg, "Unable to open account: invalid account name");
 		return;
 	}
-        currAccount = start(globalVar->head,acc);
+        currAccount = start(globalVar->head,globalVar->accountCount,acc);
 
 
         if(currAccount == NULL)
