@@ -66,7 +66,7 @@ void* printStatusThread(void* arg){
 		printf("SERVER:\nCurrent balances:\n");
 		pthread_mutex_lock(&globalVar->newAccountMutex);
 
-        print(globalVar->head);
+        print();
 
 
 		pthread_mutex_unlock(&globalVar->newAccountMutex);
@@ -285,10 +285,10 @@ void startfnc(char * clientMsg, char* acc){
             return;
     }
 
-	if(globalVar->head == NULL){
+	/*if(globalVar->head == NULL){
 		sprintf(clientMsg, "Unable to open account: invalid account name");
 		return;
-	}
+	}*/
     
     //currAccount = start(globalVar->head,globalVar->accountCount,acc);
 
