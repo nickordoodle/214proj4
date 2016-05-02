@@ -252,7 +252,7 @@ void print(){
         }
 }
 
-void openfnc(char * clientMsg, char *acc){
+void open(char * clientMsg, char *acc){
 
         if(currAccount >= 0){
                 sprintf(clientMsg, "Unable to open account while in session");
@@ -287,7 +287,7 @@ void openfnc(char * clientMsg, char *acc){
     return;
 }
 
-void startfnc(char * clientMsg, char* acc){
+void start(int sockfd, char * clientMsg, char* acc){
     int i = 0;
     if(currAccount >= 0){
             sprintf(clientMsg, "Unable to open start a second session.");
@@ -424,12 +424,12 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
-            openfnc(clientMsg, accOrNum);
+            open(clientMsg, accOrNum);
 
         } else if(!strcmp(command, "start")){
                 
             /*Starts a 'customer session' for the user*/
-            startfnc(clientMsg, accOrNum);
+            start(sockfd,clientMsg, accOrNum);
 
 
         } else if(!strcmp(command, "credit")){
