@@ -19,8 +19,8 @@ void clientSession(int arg);
 void exitClient();
 
 void print();
-void openfnc(char * clientMsg, char* acc);
-void startfnc(char * clientMsg, char* acc);
+void open(char * clientMsg, char* acc);
+void start(int sockfd, char * clientMsg, char* acc);
 void credit(char * clientMsg, char* num);
 void debit(char * clientMsg, char* num);
 void balance(char * clientMsg);
