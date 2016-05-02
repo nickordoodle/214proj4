@@ -301,7 +301,7 @@ void startfnc(char * clientMsg, char* acc){
     }
     
 
- if(currAccount < 0)
+ 	if(currAccount < 0)
                 sprintf(clientMsg, "Unable to open account: invalid account name");
         else
                 sprintf(clientMsg, "Session for account %s successfully started",globalVar->name[currAccount]);
@@ -309,8 +309,7 @@ void startfnc(char * clientMsg, char* acc){
         if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
                 sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
 
-    else 
-        sprintf(clientMsg, "Account %s successfully opened",acc);
+
     
 
                 
