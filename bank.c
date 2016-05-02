@@ -15,7 +15,7 @@
 #include <sys/mman.h>
 
 
-#include "bankfork.h"
+#include "bank.h"
 #include "client.h"
 #include "network.h"
 
@@ -206,13 +206,13 @@ void print(){
 
 void openfnc(char * clientMsg, char *acc){
 
-        if(currAccount != NULL){
+        if(currAccount >= 0){
                 sprintf(clientMsg, "Unable to open account while in session");
                 return;
         }
 
         int result = -1;
-
+	int i = 0;
 	if(globalVar->accountCount == 20){
 		sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
 
@@ -241,7 +241,7 @@ void openfnc(char * clientMsg, char *acc){
 
 void startfnc(char * clientMsg, char* acc){
 
-    if(currAccount != NULL){
+    if(currAccount >= 0){
             sprintf(clientMsg, "Unable to open start a second session.");
             return;
     }
@@ -259,12 +259,12 @@ void startfnc(char * clientMsg, char* acc){
         else
                 sprintf(clientMsg, "Account %s successfully opened",globalVar->name[currAccount]);
 
-        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0){
+        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
                 sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
 
-    else {
+    else 
         sprintf(clientMsg, "Account %s successfully opened",acc);
-    }
+    
 
                 
         
