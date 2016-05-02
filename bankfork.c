@@ -70,7 +70,7 @@ void* printStatusThread(void* arg){
 		/* TO IMPLEMENT: PRINT STATUS OF ALL ACCOUNTS HERE */
 
 
-        print();
+        print(globalVar->head);
 
 
 		pthread_mutex_unlock(&globalVar->newAccountMutex);
