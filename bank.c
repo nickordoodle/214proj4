@@ -35,7 +35,8 @@ int main(int argc, char *argv[]){
     while(index < 20){
         globalVar->name[index] = (char *) mmap(NULL, sizeof(char) * 110, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
         memset(globalVar->name[index], '\0', strlen(globalVar->name[index]));
-
+	globalVar->balance[index] = 0;
+	globalVar->inuse[index] = 0;
         index++;
     }
     memset((void *)globalVar->processes, 0, 20*sizeof(pid_t));
@@ -299,21 +300,22 @@ void startfnc(char * clientMsg, char* acc){
                     break;
             }
     }
-    
+	if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
+                sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+	if(globalVar->inuse[currAccount] == 0)
+		globalVar->inuse[currAccount] = 1;
+	else{
+		currAccount = -1;
+		break;
+	}    
+
 
  	if(currAccount < 0)
                 sprintf(clientMsg, "Unable to open account: invalid account name");
         else
                 sprintf(clientMsg, "Session for account %s successfully started",globalVar->name[currAccount]);
 
-        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
-                sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
-
-
-    
-
-                
-        
+  
         
 }
 
