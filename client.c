@@ -53,7 +53,7 @@ void *userCommandThread(void *input){
 		/* Get the user input */
 		fgets(comm, COMMAND_SIZE, stdin);
 		
-		if ((strlen(comm)>0) && (comm[strlen (comm) - 1] == '\n')){
+		if ((strlen(comm)>0)){
 			comm[strlen (comm) - 1] = '\0';
 		}
 		
@@ -84,7 +84,8 @@ int isValidCommand(char *command){
 	/* Check if first argument is valid */
 	if(!strcmp(command, "finish") || !strcmp(command, "exit") )
 		return 1;
-	else if(!strncmp(command, "open", 4) || !strncmp(command, "start", 5) 
+	else if(!strncmp(command, "open", 4) || !strncmp(command, "balance", 7)
+		|| !strncmp(command, "start", 5) 
 		|| !strncmp(command, "credit", 6) || !strncmp(command, "debit", 5) )
 		return 1;
 
