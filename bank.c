@@ -295,25 +295,29 @@ void startfnc(char * clientMsg, char* acc){
     }
 	 
     for(i = 0; i < 20; i++){
-            if(strcmp(globalVar->name[i],acc == 0){
+            if(strcmp(globalVar->name[i],acc) == 0){
             	currAccount = i;
                     break;
             }
     }
-	if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
-                sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+     	if(currAccount < 0){
+                sprintf(clientMsg, "Unable to open account: invalid account name");
+     		return;
+     	}
+	while(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0){
+                sprintf(clientMsg, "Waiting to start customer session for account %s.",acc);
+                write(sockfd, clientMsg, strlen(clientMsg));
+                sleep(2);
+	}
 	if(globalVar->inuse[currAccount] == 0)
 		globalVar->inuse[currAccount] = 1;
 	else{
+		sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
 		currAccount = -1;
-		break;
+		return;
 	}    
 
-
- 	if(currAccount < 0)
-                sprintf(clientMsg, "Unable to open account: invalid account name");
-        else
-                sprintf(clientMsg, "Session for account %s successfully started",globalVar->name[currAccount]);
+        sprintf(clientMsg, "Session for account %s successfully started",globalVar->name[currAccount]);
 
   
         
@@ -370,7 +374,7 @@ void debit(char * clientMsg, char* num){
 
 void balance(char * clientMsg){
  	if(currAccount >= 0){
-                sprintf(clientMsg, "Current Balance: %f",  globalVar->balance[currAccount]);
+                sprintf(clientMsg, "Current Balance: %.2f",  globalVar->balance[currAccount]);
 
                 return;
         }
