@@ -30,6 +30,14 @@ int main(int argc, char *argv[]){
 
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
 	globalVar->accountCount = 0;
+
+    int index = 0;
+    while(index < 20){
+        globalVar->name[index] = malloc(110);
+        memset(globalVar->name[index], '\0', strlen(globalVar->name[index]));
+
+        index++;
+    }
     memset((void *)globalVar->processes, 0, 20*sizeof(pid_t));
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
@@ -257,25 +265,25 @@ void openfnc(char * clientMsg, char *acc){
 
 	}
 
-        pthread_mutex_lock(&globalVar->newAccountMutex);
-	
-        for(i = 0; i < 20; i++){
-                if(globalVar->name[i] == NULL){
-                        strcpy(globalVar->name[i],acc);
-                        sprintf(clientMsg, "Account successfully opened\n");
-                        globalVar->accountCount++;
+    pthread_mutex_lock(&globalVar->newAccountMutex);
 
-                }
-                result = strcmp(globalVar->name[i],acc);
-                if(result == 0){
-                        sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
-                        break;
-                }
-        }
+    for(i = 0; i < 20; i++){
+            result = strcmp(globalVar->name[i],acc);
+            if(result == 0){
+                    sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
+                    return;
+            }
+    }
 
-        pthread_mutex_unlock(&globalVar->newAccountMutex);
+    strcpy(globalVar->name[(globalVar->accountCount)],acc);
+    sprintf(clientMsg, "Account successfully opened\n");
+    globalVar->accountCount++;
 
-        return;
+    
+
+    pthread_mutex_unlock(&globalVar->newAccountMutex);
+
+    return;
 }
 
 void startfnc(char * clientMsg, char* acc){
