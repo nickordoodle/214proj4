@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 
     int index = 0;
     while(index < 20){
-        globalVar->name[index] = malloc(110);
+        globalVar->name[index] = (char *) mmap(NULL, sizeof(char) * 110, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
         memset(globalVar->name[index], '\0', strlen(globalVar->name[index]));
 
         index++;
@@ -292,19 +292,20 @@ void startfnc(char * clientMsg, char* acc){
             sprintf(clientMsg, "Unable to open start a second session.");
             return;
     }
-
-	/*if(globalVar->head == NULL){
-		sprintf(clientMsg, "Unable to open account: invalid account name");
-		return;
-	}*/
+	currAccount 
+    for(i = 0; i < 20; i++){
+            result = strcmp(globalVar->name[i],acc);
+            if(result == 0){
+            	currAccount == i;
+                    break;
+            }
+    }
     
-    //currAccount = start(globalVar->head,globalVar->accountCount,acc);
 
-
- if(currAccount == -1)
+ if(currAccount < 0)
                 sprintf(clientMsg, "Unable to open account: invalid account name");
         else
-                sprintf(clientMsg, "Account %s successfully opened",globalVar->name[currAccount]);
+                sprintf(clientMsg, "Session for account %s successfully started",globalVar->name[currAccount]);
 
         if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount]) != 0)
                 sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
@@ -319,7 +320,11 @@ void startfnc(char * clientMsg, char* acc){
 }
 
 void credit(char * clientMsg, char* num){
-         if( globalVar->balance[currAccount] >= 0){
+	if(!isdigit(num)){
+		sprintf(clientMsg, "Must enter a number after command [credit].");
+		return;
+	}
+         if( globalVar->currAccount >= 0){
                 float change = atof(num);
                 globalVar->balance[currAccount] += change;
                 sprintf(clientMsg, "Balance has been updated.");
@@ -331,7 +336,11 @@ void credit(char * clientMsg, char* num){
         return;
 }
 void debit(char * clientMsg, char* num){
-	if( globalVar->balance[currAccount] >= 0){
+	if(!isdigit(num)){
+		sprintf(clientMsg, "Must enter a number after command [debit].");
+		return;
+	}
+	if( globalVar->currAccount >= 0){
                 float change = atof(num);
                 if(globalVar->balance[currAccount] >= change){
                         globalVar->balance[currAccount] -= change;
@@ -348,7 +357,7 @@ void debit(char * clientMsg, char* num){
 
 
 void balance(char * clientMsg){
- 	if( globalVar->balance[currAccount] >= 0){
+ 	if( globalVar->currAccount >= 0){
                 sprintf(clientMsg, "Current Balance: %f",  globalVar->balance[currAccount]);
 
                 return;
