@@ -294,9 +294,8 @@ void startfnc(char * clientMsg, char* acc){
     }
 	 
     for(i = 0; i < 20; i++){
-            result = strcmp(globalVar->name[i],acc);
-            if(result == 0){
-            	currAccount == i;
+            if(strcmp(globalVar->name[i],acc == 0){
+            	currAccount = i;
                     break;
             }
     }
