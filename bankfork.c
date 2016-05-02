@@ -150,6 +150,11 @@ void* clientListenerThread(void *arg){
 	return NULL;
 }
 
+void childprocess(int arg){
+	thread read 
+	clientSession(int arg);
+}
+
 
 /* This will essentially be our customer session function
    which handles all of the customer operations */
