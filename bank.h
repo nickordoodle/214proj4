@@ -1,7 +1,9 @@
 typedef struct Map__{
         pthread_mutex_t clientMutexes[20];
         pthread_mutex_t newAccountMutex;
+        pid_t processes[20];
 
+        
         int accountCount;
 
         char * name [20];
