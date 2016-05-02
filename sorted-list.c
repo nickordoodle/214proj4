@@ -62,6 +62,8 @@ int insertClient(Client *curr, char* clientName){
     /* Client has already previously occurred */
    return 2;
 }
+
+
 Client* start(char* clientName){
     return accessClient(head,clientName);       
 }

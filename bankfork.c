@@ -51,6 +51,8 @@ int main(int argc, char *argv[]){
 	pthread_create(&printStatus, 0, printStatusThread, 0);
 	pthread_join(clientListener, NULL);
 	
+    wait(NULL);
+
 	printf("SERVER: Server end.\n");
 	return 0;
 }
@@ -131,13 +133,8 @@ void* clientListenerThread(void *arg){
 
             } 
 
-            /* This is where the parent process is */
-            printf("%d\n", getpid() );
-            wait(&pid);
-            
         }
 		
-		/* potentially should store */	
 		
 
 	/*	if(pthread_create(&clientSession, 0, clientSessionThread, &newClientSock) ){
@@ -163,6 +160,11 @@ void clientSession(int arg){
 	   and performs them appropriately */
 
 	while(1){
+
+        memset(clientCommand, '\0', strlen(clientCommand));
+        memset(firstArg, '\0', strlen(firstArg));
+        memset(secondArg, '\0', strlen(secondArg));
+
 
 		int value = recv(sockfd, clientCommand, sizeof(clientCommand), 0);
 
@@ -228,17 +230,14 @@ void startfnc(char * clientMsg, char* acc){
 
 
         if(currAccount == NULL)
-                sprintf(clientMsg, "Unable to open account: invalid account name");
+            sprintf(clientMsg, "Unable to open account: invalid account name");
         else
-                sprintf(clientMsg, "Account %s successfully opened",acc);
+            sprintf(clientMsg, "Account %s successfully opened",acc);
 
-        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0){
-                sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
+        if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0)
+            sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
                 
-        } else{
-            sprintf(clientMsg, "Starting your account.  You can now make changes as needed and use the finish command when complete. \n");
-
-        }
+        
         
 }
 
