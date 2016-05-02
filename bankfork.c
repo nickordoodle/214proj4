@@ -337,7 +337,6 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
-            pthread_mutex_unlock(&globalVar->newAccountMutex);
             openfnc(clientMsg, accOrNum);
 
         } else if(!strcmp(command, "start")){
