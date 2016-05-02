@@ -53,7 +53,7 @@ int open(Client *curr,int clientCount, char* clientName){
 
 
 /*returns the Client struct if found returns NULL if not found*/
-Client* start(Client *curr, char* clientName){
+Client* start(Client *curr, int clientCount, char* clientName){
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
@@ -61,7 +61,7 @@ Client* start(Client *curr, char* clientName){
         if(curr -> left  == NULL){
                 return NULL;
         } else{
-            return start(curr->left, clientName);
+            return start(curr->left, clientCount, clientName);
         }
     }
 
@@ -70,7 +70,7 @@ Client* start(Client *curr, char* clientName){
         if(curr -> right == NULL){
                 return NULL;
         } else{
-           return start(curr->right, clientName);
+           return start(curr->right, clientCount, clientName);
         }
 
     }
@@ -86,7 +86,7 @@ Client* start(Client *curr, char* clientName){
 
 
 void print(Client * head){
-        if(clientCount == 0){
+        if(head == NULL){
                 printf("No client accounts are opened in the bank at this time.\n");
                 return;
         }
