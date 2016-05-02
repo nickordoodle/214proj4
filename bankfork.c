@@ -187,10 +187,13 @@ void clientSession(int arg){
 
 	return;
 }
+
+
 void openfnc(char * clientMsg, char* acc){
-        if(currAccount == NULL){
+
+        if(currAccount != NULL){
                 sprintf(clientMsg, "Unable to open account while in session");
-                        return;
+                return;
         }
 
         int result = -1;
@@ -216,12 +219,13 @@ void openfnc(char * clientMsg, char* acc){
 
 void startfnc(char * clientMsg, char* acc){
 
-        if(currAccount == NULL){
+        if(currAccount != NULL){
                 sprintf(clientMsg, "Unable to open start a second session.");
                 return;
         }
 
         currAccount = start(acc);
+
 
         if(currAccount == NULL)
                 sprintf(clientMsg, "Unable to open account: invalid account name");
@@ -230,9 +234,12 @@ void startfnc(char * clientMsg, char* acc){
 
         if(pthread_mutex_trylock(&globalVar->clientMutexes[currAccount->index]) != 0){
                 sprintf(clientMsg, "ERROR: This account is already in session elsewhere.");
-                return;
+                
+        } else{
+            sprintf(clientMsg, "Starting your account.  You can now make changes as needed and use the finish command when complete. \n");
+
         }
-        return;
+        
 }
 
 void credit(char * clientMsg, char* num){
@@ -301,42 +308,43 @@ void exitClient(char * clientMsg){
 }
 
 
-        /* This is where the data handling comes in */
+/* This is where the data handling comes in */
 void handleUserCommands(char *command, char *accOrNum, int sockfd){
+
         char clientMsg[100];
 
         memset(clientMsg, '\0', strlen(clientMsg));
 
-        if(strcmp(command, "open")){
+        if(!strcmp(command, "open")){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
             pthread_mutex_unlock(&globalVar->newAccountMutex);
             openfnc(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "start")){
+        } else if(!strcmp(command, "start")){
                 
             /*Starts a 'customer session' for the user*/
             startfnc(clientMsg, accOrNum);
 
 
-        } else if(strcmp(command, "credit")){
+        } else if(!strcmp(command, "credit")){
                 
             credit(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "debit")){
+        } else if(!strcmp(command, "debit")){
                 
             debit(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "balance")){
+        } else if(!strcmp(command, "balance")){
                 
             balance(clientMsg);
 
-        } else if(strcmp(command, "finish")){
+        } else if(!strcmp(command, "finish")){
 	           
            finish(clientMsg);
         
-        } else if(strcmp(command, "exit")){
+        } else if(!strcmp(command, "exit")){
 
             /*Disconnects the client from the server and ends the client process*/
             exitClient(clientMsg);

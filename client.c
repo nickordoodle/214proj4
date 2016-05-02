@@ -39,6 +39,9 @@ void *userCommandThread(void *input){
 
 	int sockfd = *(int *)input;
 
+	printf("Please enter a command from the following:\n");
+	printf("[open] account name, [start] account name [credit] amount, [debit] amount balance, [finish], [exit]\n");
+
 	while(1){
 
 		char comm[COMMAND_SIZE];
@@ -46,8 +49,6 @@ void *userCommandThread(void *input){
 		
 		memset(serverBuff, '\0', strlen(serverBuff));
 		
-		printf("Please enter a command from the following:\n");
-		printf("[open] account name, [start] account name [credit] amount, [debit] amount balance, [finish], [exit]\n");
 
 		/* Get the user input */
 		fgets(comm, COMMAND_SIZE, stdin);
@@ -56,8 +57,10 @@ void *userCommandThread(void *input){
 			comm[strlen (comm) - 1] = '\0';
 		}
 		
-		if(!isValidCommand(comm))
+		if(!isValidCommand(comm)){
+			printf("Not a valid command, please try again.\n");
 			continue;
+		}
 		
 		/* Write the user command to the serverBuffer */
 		strcpy(serverBuff, comm);
