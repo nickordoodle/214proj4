@@ -23,7 +23,7 @@ typedef struct Client_{
 
 
 Client* createClient(char * clientName, int clientCount);
-int insertClient(Client *curr,int clientCount, char* clientName);
+int open(Client *curr,int clientCount, char* clientName);
 Client* start(Client *curr, int clientCount, char* clientName);
 
 
