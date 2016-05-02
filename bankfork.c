@@ -307,36 +307,36 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
 
         memset(clientMsg, '\0', strlen(clientMsg));
 
-        if(strcmp(command, "open")){
+        if(!strcmp(command, "open")){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
             pthread_mutex_unlock(&globalVar->newAccountMutex);
             openfnc(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "start")){
+        } else if(!strcmp(command, "start")){
                 
             /*Starts a 'customer session' for the user*/
             startfnc(clientMsg, accOrNum);
 
 
-        } else if(strcmp(command, "credit")){
+        } else if(!strcmp(command, "credit")){
                 
             credit(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "debit")){
+        } else if(!strcmp(command, "debit")){
                 
             debit(clientMsg, accOrNum);
 
-        } else if(strcmp(command, "balance")){
+        } else if(!strcmp(command, "balance")){
                 
             balance(clientMsg);
 
-        } else if(strcmp(command, "finish")){
+        } else if(!strcmp(command, "finish")){
 	           
            finish(clientMsg);
         
-        } else if(strcmp(command, "exit")){
+        } else if(!strcmp(command, "exit")){
 
             /*Disconnects the client from the server and ends the client process*/
             exitClient(clientMsg);
