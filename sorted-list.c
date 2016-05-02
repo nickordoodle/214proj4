@@ -19,10 +19,6 @@ Client* createClient(char *clientName, int clientCount){
 /*returns 0 if successful 2 if client name already exsisted*/
 int open(Client *curr,int clientCount, char* clientName){
     
-    if(clientCount == 0){
-        curr = createClient(clientName, clientCount);
-        return 0;
-    }
 
     int compareVal = strcmp(curr->name, clientName);
 
