@@ -134,6 +134,12 @@ void* clientListenerThread(void *arg){
 
             } 
 
+<<<<<<< HEAD
+=======
+            /* This is where the parent process is */
+            printf("%d\n", getpid() );
+
+>>>>>>> fdf60d0090eff0c067c02943ff10a93ece23a269
         }
 		
 		
@@ -146,6 +152,11 @@ void* clientListenerThread(void *arg){
 	}
 
 	return NULL;
+}
+
+void childprocess(int arg){
+	thread read 
+	clientSession(int arg);
 }
 
 
@@ -216,6 +227,7 @@ void openfnc(char * clientMsg, char* acc){
                 globalVar->head = createClient(acc, globalVar->accountCount);
                 globalVar->accountCount++;
                 pthread_mutex_unlock(&globalVar->newAccountMutex);
+                sprintf(clientMsg, "Account successfully opened\n");
                 return;
         }
 
@@ -335,7 +347,6 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
-            pthread_mutex_unlock(&globalVar->newAccountMutex);
             openfnc(clientMsg, accOrNum);
 
         } else if(!strcmp(command, "start")){
