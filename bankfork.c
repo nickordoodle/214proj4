@@ -214,6 +214,7 @@ void openfnc(char * clientMsg, char* acc){
                 globalVar->head = createClient(acc, globalVar->accountCount);
                 globalVar->accountCount++;
                 pthread_mutex_unlock(&globalVar->newAccountMutex);
+                sprintf(clientMsg, "Account successfully opened\n");
                 return;
         }
 
