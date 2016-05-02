@@ -134,8 +134,7 @@ void* clientListenerThread(void *arg){
 
             /* This is where the parent process is */
             printf("%d\n", getpid() );
-            wait(&pid);
-            
+
         }
 		
 		/* potentially should store */	
