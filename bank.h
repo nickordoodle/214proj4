@@ -27,7 +27,7 @@ void balance(char * clientMsg);
 void finish(char * clientMsg);
 void exitClient(char * clientMsg);
 
-
+void signalHandler();
 void* printStatusThread(void* arg);
 void* clientListenerThread(void *arg);
 void handleUserCommands(char *command, char *accOrNum, int sockfd);
