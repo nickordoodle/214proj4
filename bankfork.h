@@ -3,6 +3,8 @@
 typedef struct Map__{
         pthread_mutex_t clientMutexes[20];
         pthread_mutex_t newAccountMutex;
+        Client * head;
+        int accountCount;
 }Map;
 
 

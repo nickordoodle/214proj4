@@ -1,10 +1,8 @@
 #include "sorted-list.h"
 
-Client *head = NULL;
-int clientCount = 0;
 
 /*creates newClient to be added to the BST*/
-Client* createClient(char *clientName){
+Client* createClient(char *clientName, int clientCount){
         Client *newClient = malloc(sizeof(Client));
         newClient->left = NULL;
         newClient->right = NULL;
@@ -14,48 +12,33 @@ Client* createClient(char *clientName){
         newClient->balance = 0;
         newClient->inuse = 0;
         newClient->index = clientCount;
-        clientCount++;
 
         return newClient;
 }
 
-/*returns 0 if successful 1 if already reached max clients 2 if account with that name already exsits*/
-int open(char *clientName){
-
-      if(clientCount == 20){
-              return 1;
-      }
-
-
-       return insertClient(head, clientName);
-}
 /*returns 0 if successful 2 if client name already exsisted*/
-int insertClient(Client *curr, char* clientName){
+int open(Client *curr,int clientCount, char* clientName){
     
-    if(!head){
-        head = createClient(clientName);
-        return 0;
-    }
 
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
     if(compareVal < 0){
         if(curr -> left  == NULL){
-                curr -> left = createClient(clientName);
+                curr -> left = createClient(clientName,clientCount);
                 return 0;
         } else{
-            return insertClient(curr->left, clientName);
+            return open(curr->left, clientCount, clientName);
  }
     }
 
     /* Insert into right subtree */
     else if (compareVal > 0){
         if(curr -> right == NULL){
-                curr -> right = createClient(clientName);
+                curr -> right = createClient(clientName, clientCount);
                 return 0;
         } else{
-           return insertClient(curr->right, clientName);
+           return open(curr->right, clientCount, clientName);
         }
 
     }
@@ -64,13 +47,8 @@ int insertClient(Client *curr, char* clientName){
 }
 
 
-Client* start(char* clientName){
-    return accessClient(head,clientName);       
-}
-
-
 /*returns the Client struct if found returns NULL if not found*/
-Client* accessClient(Client *curr, char* clientName){
+Client* start(Client *curr, int clientCount, char* clientName){
     int compareVal = strcmp(curr->name, clientName);
 
     /* Insert into left subtree */
@@ -78,7 +56,7 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> left  == NULL){
                 return NULL;
         } else{
-            return accessClient(curr->left, clientName);
+            return start(curr->left, clientCount, clientName);
         }
     }
 
@@ -87,7 +65,7 @@ Client* accessClient(Client *curr, char* clientName){
         if(curr -> right == NULL){
                 return NULL;
         } else{
-           return accessClient(curr->right, clientName);
+           return start(curr->right, clientCount, clientName);
         }
 
     }
@@ -102,8 +80,8 @@ Client* accessClient(Client *curr, char* clientName){
 
 
 
-void print(){
-        if(clientCount == 0){
+void print(Client * head){
+        if(head == NULL){
                 printf("No client accounts are opened in the bank at this time.\n");
                 return;
         }

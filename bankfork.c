@@ -30,7 +30,8 @@ Client * currAccount = NULL;
 int main(int argc, char *argv[]){
 
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
-
+	globalVar->head = NULL;
+	globalVar->accountCount = 0;
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
 	/*The print thread prints the balances every 20 seconds*/
@@ -200,15 +201,28 @@ void openfnc(char * clientMsg, char* acc){
 
         int result = -1;
 
+	if(globalVar->accountCount == 20){
+		sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
+
+	}
 
         pthread_mutex_lock(&globalVar->newAccountMutex);
+	
 
-        result = open(acc);
+	
+        result = open(globalVar->head,globalVar->accountCount,acc);
+ 	
+ 	if(globalVar->head == NULL){
+                globalVar->head = createClient(acc, globalVar->accountCount);
+                globalVar->accountCount++;
+                pthread_mutex_unlock(&globalVar->newAccountMutex);
+                return;
+        }
 
-        if(result == 0)
+        if(result == 0){
                 sprintf(clientMsg, "Account successfully opened\n");
-        else if(result == 1)
-                sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
+                globalVar->accountCount++;
+        }
         else if(result == 2)
                 sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
         else
@@ -225,8 +239,11 @@ void startfnc(char * clientMsg, char* acc){
                 sprintf(clientMsg, "Unable to open start a second session.");
                 return;
         }
-
-        currAccount = start(acc);
+	if(globalVar->head == NULL){
+		sprintf(clientMsg, "Unable to open account: invalid account name");
+		return;
+	}
+        currAccount = start(globalVar->head,globalVar->accountCount,acc);
 
 
         if(currAccount == NULL)
