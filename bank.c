@@ -287,12 +287,12 @@ void openfnc(char * clientMsg, char *acc){
 }
 
 void startfnc(char * clientMsg, char* acc){
-
+    int i = 0;
     if(currAccount >= 0){
             sprintf(clientMsg, "Unable to open start a second session.");
             return;
     }
-	currAccount 
+	 
     for(i = 0; i < 20; i++){
             result = strcmp(globalVar->name[i],acc);
             if(result == 0){
@@ -320,11 +320,17 @@ void startfnc(char * clientMsg, char* acc){
 }
 
 void credit(char * clientMsg, char* num){
-	if(!isdigit(num)){
+	int badentry = 0;
+	int i;
+	for(i = 0; i < strlen(num);i++)
+		if(!isdigit(*(num+i)))
+			badentry = 1;
+	
+	if(badentry != 0){
 		sprintf(clientMsg, "Must enter a number after command [credit].");
 		return;
 	}
-         if( globalVar->currAccount >= 0){
+         if(currAccount >= 0){
                 float change = atof(num);
                 globalVar->balance[currAccount] += change;
                 sprintf(clientMsg, "Balance has been updated.");
@@ -336,11 +342,17 @@ void credit(char * clientMsg, char* num){
         return;
 }
 void debit(char * clientMsg, char* num){
-	if(!isdigit(num)){
+	int badentry = 0;
+	int i;
+	for(i = 0; i < strlen(num);i++)
+		if(!isdigit(*(num+i)))
+			badentry = 1;
+	
+	if(badentry != 0){
 		sprintf(clientMsg, "Must enter a number after command [debit].");
 		return;
 	}
-	if( globalVar->currAccount >= 0){
+	if(currAccount >= 0){
                 float change = atof(num);
                 if(globalVar->balance[currAccount] >= change){
                         globalVar->balance[currAccount] -= change;
@@ -357,7 +369,7 @@ void debit(char * clientMsg, char* num){
 
 
 void balance(char * clientMsg){
- 	if( globalVar->currAccount >= 0){
+ 	if(currAccount >= 0){
                 sprintf(clientMsg, "Current Balance: %f",  globalVar->balance[currAccount]);
 
                 return;
