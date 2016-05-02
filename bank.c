@@ -29,8 +29,8 @@ int currAccount = -1;
 int main(int argc, char *argv[]){
 
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
-
 	globalVar->accountCount = 0;
+    memset((void *)globalVar->processes, 0, 20*sizeof(pid_t));
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
 	/*The print thread prints the balances every 20 seconds*/
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
 	
 
 	/*This signal handler will wait for the server to receive SIGINT so it can shut the clients down*/
-	/*signal(SIGINT, sigint_handler);*/
+	signal(SIGINT, signalHandler);
 	
 
 
@@ -66,7 +66,7 @@ void* printStatusThread(void* arg){
 		printf("SERVER:\nCurrent balances:\n");
 		pthread_mutex_lock(&globalVar->newAccountMutex);
 
-        	print();
+        print(globalVar->head);
 
 
 		pthread_mutex_unlock(&globalVar->newAccountMutex);
@@ -74,6 +74,22 @@ void* printStatusThread(void* arg){
 		/* Control this output to every 20 seconds */
 		sleep(20);
 	}
+}
+
+void signalHandler(){
+
+    int index = 0;
+    while(index < 20){
+
+        if(globalVar->processes[index] != 0){
+            kill(globalVar->processes[index], SIGTERM);
+
+        }
+
+        index++;
+    }
+
+    exit(0);
 }
 
 /* This thread will handle incoming requests from new 
@@ -115,7 +131,15 @@ void* clientListenerThread(void *arg){
 
         if(newClientSock > 0){
 
+            printf("\nA new client has connected.\n");
             pid_t pid = fork();
+
+            int index = 0;
+            while(globalVar->processes[index] != 0){
+                index++;
+            }
+            globalVar->processes[index] = pid;
+
             if(pid < 0){
 
                 char *message = "SERVER: Could not create child process.";
@@ -171,7 +195,8 @@ void clientSession(int arg){
 
 		int value = recv(sockfd, clientCommand, sizeof(clientCommand), 0);
 
-        /*
+
+                /*
 		if (value == -1) { 
 			printf("ERROR: Could not receive data from client.\n");
 			break;
@@ -183,6 +208,19 @@ void clientSession(int arg){
 		} else if(value > 0){
 
             sscanf(clientCommand, "%s %s", firstArg, secondArg);
+            int index = 0;
+            while(isalpha(firstArg[index])){
+                index++;
+            }
+
+            firstArg[index] = '\0';
+
+            index = 0;
+            while(isalpha(secondArg[index]) || isdigit(secondArg[index])){
+                index++;
+            }
+
+            secondArg[index] = '\0';
 
             handleUserCommands(firstArg, secondArg, sockfd);
         }
@@ -192,6 +230,7 @@ void clientSession(int arg){
 
 	return;
 }
+
 
 void print(){
         int i = 0;
