@@ -108,7 +108,6 @@ void end(){
 	open = 0;
 
 	pthread_join(serverResponse, NULL);
-	kill(userCommand, 0);
 	close(sockfd);
 	exit(1);
 }
