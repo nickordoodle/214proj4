@@ -22,6 +22,7 @@ void printAccounts();
 void clientSession(int arg);
 void exitClient();
 
+void clean();
 void print();
 void open(char * clientMsg, char* acc);
 void start(int sockfd, char * clientMsg, char* acc);
