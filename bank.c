@@ -90,7 +90,7 @@ void* printStatusThread(void* arg){
 
 void signalHandler(){
 	ProcessLL * head = processHead;
-    while(head != null){
+    while(head != NULL){
 
 	write(head->sockfd, "end", strlen("end"));
  
