@@ -1,8 +1,8 @@
 typedef struct Map__{
         pthread_mutex_t clientMutexes[20];
         pthread_mutex_t newAccountMutex;
-        pid_t processes[20];
-
+        
+        int open;
         
         int accountCount;
 
@@ -11,7 +11,11 @@ typedef struct Map__{
         int inuse[20];
 }Map;
 
-
+typedef struct ProcessLL_{
+        int sockfd;
+        pid_t child;
+        processLL_ next;
+}ProcessLL;
 
 
 void printAccounts();
