@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
 	globalVar->accountCount = 0;
-	globalVar->open == 1;
+	globalVar->open = 1;
 	processHead = NULL;
     int index = 0;
     while(index < 20){
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
    every 20 seconds */
 void* printStatusThread(void* arg){
 	
-	while(open == 1){
+	while(globalVar->open == 1){
 
 		printf("SERVER:\nCurrent balances:\n");
 		pthread_mutex_lock(&globalVar->newAccountMutex);
@@ -85,6 +85,7 @@ void* printStatusThread(void* arg){
 		/* Control this output to every 20 seconds */
 		sleep(20);
 	}
+	return NULL;
 }
 
 void signalHandler(){
@@ -127,7 +128,7 @@ void* clientListenerThread(void *arg){
 	bind(sockfd, (struct sockaddr*)&serverAddressInfo, sizeof(serverAddressInfo));
 
 
-	while(open == 1){
+	while(globalVar->open == 1){
 
 		if(listen(sockfd, 4) < 0){
 			printf("SERVER: A listen error occurred.");
@@ -145,11 +146,7 @@ void* clientListenerThread(void *arg){
             printf("\nA new client has connected.\n");
             pid_t pid = fork();
 
-            int index = 0;
-            while(globalVar->processes[index] != 0){
-                index++;
-            }
-            globalVar->processes[index] = pid;
+         
 
             if(pid < 0){
 
@@ -164,12 +161,12 @@ void* clientListenerThread(void *arg){
                 clientSession(newClientSock);
 
             } else{
-            	ProcessLL temp = malloc(size of(ProcessLL));
+            	ProcessLL * temp = (ProcessLL *) malloc(sizeof(ProcessLL));
             	temp->sockfd = newClientSock;
             	temp->child = pid;
-            	processLL_ next = NULL;
+            	temp-> next = NULL;
             	if(processHead != NULL){
-            		ProcessLL curr = processHead;
+            		ProcessLL * curr = processHead;
             		while(curr->next!=NULL)
             			curr = processHead->next;
             		curr->next = temp;
@@ -209,7 +206,7 @@ void clientSession(int arg){
 	/* Compares all the command operations
 	   and performs them appropriately */
 
-	while(open == 1){
+	while(globalVar->open == 1){
 
         memset(clientCommand, '\0', strlen(clientCommand));
         memset(firstArg, '\0', strlen(firstArg));
