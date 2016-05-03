@@ -417,7 +417,7 @@ void finish(char * clientMsg){
 
 
 void exitClient(char * clientMsg){
-
+	finish(clientMsg);
     sprintf(clientMsg, "end");     
 
 
