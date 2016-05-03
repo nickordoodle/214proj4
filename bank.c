@@ -32,6 +32,7 @@ int main(int argc, char *argv[]){
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
 	globalVar->accountCount = 0;
 	globalVar->open == 1;
+	processHead = NULL;
     int index = 0;
     while(index < 20){
         globalVar->name[index] = (char *) mmap(NULL, sizeof(char) * 110, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
@@ -41,7 +42,6 @@ int main(int argc, char *argv[]){
         index++;
     }
     
-    memset((void *)globalVar->processes, 0, 20*sizeof(pid_t));
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
 	/*The print thread prints the balances every 20 seconds*/
