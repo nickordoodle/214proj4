@@ -122,6 +122,7 @@ void *serverResponseThread(void *input){
 		int num = recv(sockfd, serverBuff, sizeof(serverBuff), 0);
 		if(num <= 0){
 			printf("ERROR: Connection closed.\n");
+			end();
 			break;
 		}
 		
