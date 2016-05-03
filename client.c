@@ -23,6 +23,10 @@ int sockfd;
 char serverBuff[508]; 
 char commandBuff[508];
 int open = 1;
+//Thread to get server message
+pthread_t serverResponse;
+//Command input waits for input from the user and sends it to the client
+pthread_t userCommand;
 
 void error(char *msg){
     perror(msg);
@@ -147,10 +151,7 @@ int main(int argc, char *argv[])
     struct hostent *serverIPAddress;	// Super-special secret C struct that holds info about a machine's address
     
 	
-	//Thread to get server message
-	pthread_t serverResponse;
-	//Command input waits for input from the user and sends it to the client
-	pthread_t userCommand;
+
 	
 	// If the user didn't enter enough arguments, complain and exit
    
