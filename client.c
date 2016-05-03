@@ -106,8 +106,9 @@ int isValidCommand(char *command){
 void end(){
 	printf("Client closing.\n");
 	open = 0;
-	pthread_join(userCommand, NULL);
+
 	pthread_join(serverResponse, NULL);
+	kill(userCommand, 0);
 	close(sockfd);
 	exit(1);
 }
