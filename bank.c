@@ -159,6 +159,8 @@ void* clientListenerThread(void *arg){
                 /* This is where the child will execute code */
                 printf("Created a child process for a new client.  The process ID is: %d\n", getpid());
                 clientSession(newClientSock);
+                clean();
+                break;
 
             } else{
             	ProcessLL * temp = (ProcessLL *) malloc(sizeof(ProcessLL));
@@ -185,7 +187,7 @@ void* clientListenerThread(void *arg){
 		}*/	
 
 	}
-
+	wait();
 	return NULL;
 }
 /*
@@ -194,7 +196,15 @@ void childprocess(int arg){
 	clientSession(int arg);
 } */
 
-
+void clean(){
+	if(currAccount >= 0){
+		pthread_mutex_unlock(&globalVar->clientMutexes[currAccount]);
+		globalVar[currAccount] = 0;
+	}
+		
+	currAccount = -1;
+	return;
+}
 /* This will essentially be our customer session function
    which handles all of the customer operations */
 void clientSession(int arg){
