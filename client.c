@@ -146,7 +146,6 @@ int main(int argc, char *argv[])
 	// Declare initial vars
     	// file descriptor for our socket
 	int portno = -1;	// server port to connect to
-	int n = -1;			// utility variables - for monitoring reading/writing from/to the socket
 	sockfd = -1; 		
     struct sockaddr_in serverAddressInfo;	// Super-special secret C struct that holds address info for building our socket
     struct hostent *serverIPAddress;	// Super-special secret C struct that holds info about a machine's address
@@ -214,34 +213,6 @@ int main(int argc, char *argv[])
 		printf("Establishing connection with server...\n");	
 		sleep(3);	
 	}	
-
-	// zero out the message serverBuffer
-   /* bzero(serverBuff,256);
-
-
-	// try to write it out to the server
-	n = write(sockfd,serverBuff,strlen(serverBuff));
-	
-	// if we couldn't write to the server for some reason, complain and exit
-    if (n < 0)
-	{
-         error("ERROR writing to socket");
-    }
-	
-	// sent message to the server, zero the serverBuffer back out to read the server's response
-	bzero(serverBuff,256);
-
-	// if we couldn't read from the server for some reason, complain and exit
-    if ((n = read(sockfd,serverBuff,255)) < 0)
-	{
-         error("ERROR reading from socket");
-	} else{
-		printf("%s\n", serverBuff );
-	}*/
-
-
-
-	/* INSERT CLIENT COMMAND THREAD AND SERVER RESPONSE THREAD HERE */
 
 
 
