@@ -107,7 +107,7 @@ void end(){
 	printf("Client closing.\n");
 	open = 0;
 
-	pthread_join(serverResponse, NULL);
+//	pthread_join(serverResponse, NULL);
 	close(sockfd);
 	exit(1);
 }
