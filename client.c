@@ -22,6 +22,7 @@
 int sockfd;
 char serverBuff[508]; 
 char commandBuff[508];
+int open = 1;
 
 void error(char *msg){
     perror(msg);
@@ -42,9 +43,10 @@ void *userCommandThread(void *input){
 	printf("Please enter a command from the following:\n");
 	printf("[open] account name, [start] account name [credit] amount, [debit] amount, [balance], [finish], [exit]\n");
 
-	while(1){
+	while(open == 1){
 
 		char comm[COMMAND_SIZE];
+		bzero(comm,COMMAND_SIZE);
 		memset(comm, '\0', COMMAND_SIZE);
 		
 		memset(serverBuff, '\0', strlen(serverBuff));
@@ -93,14 +95,17 @@ int isValidCommand(char *command){
 	return 0;
 }
 
-
+void close(){
+	printf("Client closing.\n");
+	open = 0;
+}
 /* A thread for taking the user command and executing it on the server side.
    This thread executes what the user wants and sends back the appropriate
    message depending on the bank/account operation being done */
 void *serverResponseThread(void *input){
 
 	int sockfd = *(int *)input;
-	while(1){
+	while(open == 1){
 		memset(serverBuff, '\0', strlen(serverBuff));
 		int num = recv(sockfd, serverBuff, sizeof(serverBuff), 0);
 		if(num <= 0){
@@ -109,8 +114,7 @@ void *serverResponseThread(void *input){
 		}
 		
 		if(strcmp(serverBuff, "end") == 0){
-			printf("Client closing.\n");
-			exit(0);
+			close();
 		}
 
 		printf("SERVER REPONSE: %s \n", serverBuff);
@@ -121,7 +125,7 @@ void *serverResponseThread(void *input){
 }
 
 
-void sigint_handler(int sig){
+/*void sigint_handler(int sig){
 	/* Clear out our server commands */
 	memset(serverBuff, '\0', strlen(serverBuff));
 
@@ -134,7 +138,7 @@ void sigint_handler(int sig){
 		exit(1);
     }
 	exit(0);
-}
+}*/
 
 
 int main(int argc, char *argv[])
@@ -154,20 +158,19 @@ int main(int argc, char *argv[])
 	pthread_t userCommand;
 	
 	// If the user didn't enter enough arguments, complain and exit
-    if (argc  == 2)
-	{
+   
+	
 
 		// convert the text representation of the port number given by the user to an int
-		portno = MYPORT;
+	portno = MYPORT;
 
-    } else if(argc == 3){
-    	portno = atoi(argv[2]);
 
-    } else{
-		fprintf(stderr,"usage 1: %s [hostname] [port] for user designated port\n", argv[0]);
+
+ 	if (argc < 2){
 		fprintf(stderr,"usage 2: [hostname] for default port\n");
 		exit(0);
-    }
+ 	}
+    
 
 	
 	// look up the IP address that matches up with the name given - the name given might
@@ -261,8 +264,6 @@ int main(int argc, char *argv[])
 	printf("Client end.\n");
 
 
-	// print out server's message
-    printf("%s\n",serverBuff);
 
 
     return 0;
