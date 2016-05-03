@@ -67,16 +67,20 @@ void *userCommandThread(void *input){
 		/* Write the user command to the serverBuffer */
 		strcpy(serverBuff, comm);
 		
+		if(strcmp(comm,"exit"))
+			break;
+		
 		//Send the serverBuffer to the server
 		if ((send(sockfd, serverBuff, strlen(serverBuff),0))== -1) {
-                printf("ERROR: Could not send message.\n");
-                close(sockfd);
+        		printf("ERROR: Could not send message.\n");
+                	close(sockfd);
                 exit(1);
         }
         
         /* Have the user command input sleep for two seconds */
-        sleep(2);
+        	sleep(2);
 	}
+	
 
 	return NULL;
 }
@@ -98,6 +102,10 @@ int isValidCommand(char *command){
 void end(){
 	printf("Client closing.\n");
 	open = 0;
+	pthread_join(userCommand, NULL);
+	pthread_join(serverResponse, NULL);
+	close(sockfd);
+	exit(1);
 }
 /* A thread for taking the user command and executing it on the server side.
    This thread executes what the user wants and sends back the appropriate
