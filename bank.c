@@ -337,47 +337,49 @@ void start(int sockfd, char * clientMsg, char* acc){
 void credit(char * clientMsg, char* num){
 	int badentry = 0;
 	int i;
+	if(currAccount < 0){
+		sprintf(clientMsg, "Command [credit] can only be done after an account session has started.");
+		return;
+	}
 	for(i = 0; i < strlen(num);i++)
 		if(!isdigit(*(num+i)))
 			badentry = 1;
 	
-	if(badentry != 0){
+	if(badentry != 0 ||strcmp(num,"") == 0){
 		sprintf(clientMsg, "Must enter a number after command [credit].");
 		return;
 	}
-         if(currAccount >= 0){
-                float change = atof(num);
+        float change = atof(num);
                 globalVar->balance[currAccount] += change;
                 sprintf(clientMsg, "Balance has been updated.");
 
-                return;
-        }
-        sprintf(clientMsg, "Command [credit] can only be done after an account session has started.");
 
         return;
 }
 void debit(char * clientMsg, char* num){
 	int badentry = 0;
 	int i;
+	if(currAccount < 0){
+		sprintf(clientMsg, "Command [debit] can only be done after an account session has started.");
+		return;
+	}
+
 	for(i = 0; i < strlen(num);i++)
 		if(!isdigit(*(num+i)))
 			badentry = 1;
 	
-	if(badentry != 0){
+	if(badentry != 0 || strcmp(num,"") == 0){
 		sprintf(clientMsg, "Must enter a number after command [debit].");
 		return;
 	}
-	if(currAccount >= 0){
-                float change = atof(num);
-                if(globalVar->balance[currAccount] >= change){
-                        globalVar->balance[currAccount] -= change;
+        float change = atof(num);
+        if(globalVar->balance[currAccount] >= change){
+                globalVar->balance[currAccount] -= change;
 
-                        sprintf(clientMsg, "Balance has been updated.");
-                }else
-                        sprintf(clientMsg, "Unable to complete transaction: Debit larger than balance.");
-                return;
-        }
-        sprintf(clientMsg, "Command [debit] can only be done after an account session has started.");
+                sprintf(clientMsg, "Balance has been updated.");
+        }else
+        	sprintf(clientMsg, "Unable to complete transaction: Debit larger than balance.");
+        
 
         return;
 }
