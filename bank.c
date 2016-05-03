@@ -178,28 +178,17 @@ void* clientListenerThread(void *arg){
 
 
         }
-		
-		
-
-	/*	if(pthread_create(&clientSession, 0, clientSessionThread, &newClientSock) ){
-			printf("ERROR: Could not launch client session thread.\n");
-			sleep(1);
-		}*/	
 
 	}
-	wait();
+	//wait();
 	return NULL;
 }
-/*
-void childprocess(int arg){
-	//thread read 
-	clientSession(int arg);
-} */
+
 
 void clean(){
 	if(currAccount >= 0){
 		pthread_mutex_unlock(&globalVar->clientMutexes[currAccount]);
-		globalVar[currAccount] = 0;
+		globalVar->inuse[currAccount] = 0;
 	}
 		
 	currAccount = -1;
@@ -283,8 +272,8 @@ void open(char * clientMsg, char *acc){
         int result = -1;
 	int i = 0;
 	if(globalVar->accountCount == 20){
-		sprintf(clientMsg, "Unable to open new account: Account limit reached\n");
-
+		sprintf(clientMsg, "Unable to open new account: Account limit reached");
+		return;
 	}
 
     pthread_mutex_lock(&globalVar->newAccountMutex);
@@ -292,13 +281,13 @@ void open(char * clientMsg, char *acc){
     for(i = 0; i < 20; i++){
             result = strcmp(globalVar->name[i],acc);
             if(result == 0){
-                    sprintf(clientMsg, "Unable to open new account: Account name already in use\n");
+                    sprintf(clientMsg, "Unable to open new account: Account name already in use");
                     return;
             }
     }
 
     strcpy(globalVar->name[(globalVar->accountCount)],acc);
-    sprintf(clientMsg, "Account successfully opened\n");
+    sprintf(clientMsg, "Account successfully opened");
     globalVar->accountCount++;
 
     
