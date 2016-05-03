@@ -14,7 +14,7 @@ typedef struct Map__{
 typedef struct ProcessLL_{
         int sockfd;
         pid_t child;
-        processLL_ next;
+        struct ProcessLL_ next;
 }ProcessLL;
 
 
