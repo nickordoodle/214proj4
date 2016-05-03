@@ -282,6 +282,7 @@ void open(char * clientMsg, char *acc){
             result = strcmp(globalVar->name[i],acc);
             if(result == 0){
                     sprintf(clientMsg, "Unable to open new account: Account name already in use");
+                    pthread_mutex_unlock(&globalVar->newAccountMutex);
                     return;
             }
     }
@@ -300,7 +301,7 @@ void open(char * clientMsg, char *acc){
 void start(int sockfd, char * clientMsg, char* acc){
     int i = 0;
     if(currAccount >= 0){
-            sprintf(clientMsg, "Unable to open start a second session.");
+            sprintf(clientMsg, "Unable to start a second session.");
             return;
     }
 	 
