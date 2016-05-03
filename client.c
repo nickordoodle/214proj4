@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
 	}	
 
 	// zero out the message serverBuffer
-    bzero(serverBuff,256);
+   /* bzero(serverBuff,256);
 
 
 	// try to write it out to the server
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
          error("ERROR reading from socket");
 	} else{
 		printf("%s\n", serverBuff );
-	}
+	}*/
 
 
 
