@@ -126,20 +126,6 @@ void *serverResponseThread(void *input){
 }
 
 
-/*void sigint_handler(int sig){
-	/* Clear out our server commands */
-	memset(serverBuff, '\0', strlen(serverBuff));
-
-	/* We want to stop the server so send finish command to 
-	   the server */
-	strcpy(serverBuff, "finish");
-	if ((send(sockfd,serverBuff, strlen(serverBuff),0))== -1) {
-		printf("ERROR: Could not close client account session on exit.\n");
-		close(sockfd);
-		exit(1);
-    }
-	exit(0);
-}*/
 
 
 int main(int argc, char *argv[])
