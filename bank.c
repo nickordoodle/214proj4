@@ -25,12 +25,13 @@
 
 Map * globalVar = NULL;
 int currAccount = -1;
+ProcessLL * processHead;
 
 int main(int argc, char *argv[]){
 
 	globalVar =(Map *) mmap(NULL, sizeof(Map), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
 	globalVar->accountCount = 0;
-
+	globalVar->open == 1;
     int index = 0;
     while(index < 20){
         globalVar->name[index] = (char *) mmap(NULL, sizeof(char) * 110, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON,0,0);
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]){
 	globalVar->inuse[index] = 0;
         index++;
     }
+    
     memset((void *)globalVar->processes, 0, 20*sizeof(pid_t));
 	/*The client acceptor thread listens for clients*/
 	pthread_t clientListener;
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]){
    every 20 seconds */
 void* printStatusThread(void* arg){
 	
-	while(1){
+	while(open == 1){
 
 		printf("SERVER:\nCurrent balances:\n");
 		pthread_mutex_lock(&globalVar->newAccountMutex);
@@ -87,15 +89,15 @@ void* printStatusThread(void* arg){
 
 void signalHandler(){
 
-    int index = 0;
-    while(index < 20){
+    while(head != null){
 
-        if(globalVar->processes[index] != 0){
-            kill(globalVar->processes[index], SIGTERM);
+	write(head->sockfd, "end", strlen("end"));
+ 
+        kill(globalVar->head->child, SIGTERM);
 
         }
+	head = head->next;
 
-        index++;
     }
 
     exit(0);
@@ -125,14 +127,14 @@ void* clientListenerThread(void *arg){
 	bind(sockfd, (struct sockaddr*)&serverAddressInfo, sizeof(serverAddressInfo));
 
 
-	while(1){
+	while(open == 1){
 
 		if(listen(sockfd, 4) < 0){
 			printf("SERVER: A listen error occurred.");
 		}
 
-	    newClientSock = accept(sockfd, (struct sockaddr*)NULL, NULL);
-    	strcpy(outputMsg, "SERVER: Connection to server successful.\n");
+	    	newClientSock = accept(sockfd, (struct sockaddr*)NULL, NULL);
+    		strcpy(outputMsg, "SERVER: Connection to server successful.\n");
 		printf("SERVER: Connection to client successful.\n");
 		write(newClientSock, outputMsg, strlen(outputMsg));
 
@@ -161,7 +163,19 @@ void* clientListenerThread(void *arg){
                 printf("Created a child process for a new client.  The process ID is: %d\n", getpid());
                 clientSession(newClientSock);
 
-            } 
+            } else{
+            	ProcessLL temp = malloc(size of(ProcessLL));
+            	temp->sockfd = newClientSock;
+            	temp->child = pid;
+            	processLL_ next = NULL;
+            	if(processHead != NULL){
+            		ProcessLL curr = processHead;
+            		while(curr->next!=NULL)
+            			curr = processHead->next;
+            		curr->next = temp;
+            	}else
+            		processHead = temp;
+            }
 
 
         }
@@ -195,7 +209,7 @@ void clientSession(int arg){
 	/* Compares all the command operations
 	   and performs them appropriately */
 
-	while(1){
+	while(open == 1){
 
         memset(clientCommand, '\0', strlen(clientCommand));
         memset(firstArg, '\0', strlen(firstArg));
