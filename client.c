@@ -95,7 +95,7 @@ int isValidCommand(char *command){
 	return 0;
 }
 
-void close(){
+void end(){
 	printf("Client closing.\n");
 	open = 0;
 }
@@ -114,7 +114,8 @@ void *serverResponseThread(void *input){
 		}
 		
 		if(strcmp(serverBuff, "end") == 0){
-			close();
+			end();
+			break;
 		}
 
 		printf("SERVER REPONSE: %s \n", serverBuff);
@@ -247,8 +248,7 @@ int main(int argc, char *argv[])
 	/* INSERT CLIENT COMMAND THREAD AND SERVER RESPONSE THREAD HERE */
 
 
-	//Sets up a signal handler to finish account sessions on exit
-	signal(SIGINT, sigint_handler);
+
 	
 	if(pthread_create(&serverResponse, 0, serverResponseThread, &sockfd) != 0){
 		printf("ERROR: Failure launching response output thread.\n");
