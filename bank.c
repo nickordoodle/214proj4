@@ -98,7 +98,7 @@ void signalHandler(){
         }
 	head = head->next;
 
-    }
+    
 
     exit(0);
 }
