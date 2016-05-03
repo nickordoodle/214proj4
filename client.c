@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
 	}
 
 	pthread_join(userCommand, NULL);
-	printf("Client end.\n");
+	printf("Client ending.\n");
 
 
 
