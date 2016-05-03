@@ -89,12 +89,12 @@ void* printStatusThread(void* arg){
 }
 
 void signalHandler(){
-
+	ProcessLL * head = processHead;
     while(head != null){
 
 	write(head->sockfd, "end", strlen("end"));
  
-        kill(globalVar->head->child, SIGTERM);
+        kill(head->child, SIGTERM);
 
         }
 	head = head->next;
