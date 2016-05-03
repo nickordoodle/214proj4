@@ -71,7 +71,7 @@ void *userCommandThread(void *input){
 		/* Write the user command to the serverBuffer */
 		strcpy(serverBuff, comm);
 		
-		if(strcmp(comm,"exit"))
+		if(!strcmp(comm,"exit"))
 			break;
 		
 		//Send the serverBuffer to the server
