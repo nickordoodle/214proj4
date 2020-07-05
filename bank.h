@@ -24,7 +24,7 @@ void exitClient();
 
 void clean();
 void print();
-void open(char * clientMsg, char* acc);
+void openAcc(char * clientMsg, char* acc);
 void start(int sockfd, char * clientMsg, char* acc);
 void credit(char * clientMsg, char* num);
 void debit(char * clientMsg, char* num);

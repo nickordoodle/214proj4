@@ -262,7 +262,7 @@ void print(){
         }
 }
 
-void open(char * clientMsg, char *acc){
+void openAcc(char * clientMsg, char *acc){
 
         if(currAccount >= 0){
                 sprintf(clientMsg, "Unable to open account while in session");
@@ -437,7 +437,7 @@ void handleUserCommands(char *command, char *accOrNum, int sockfd){
                 
             /*Will utilize the open account mutex and attempt to open an account*/
 
-            open(clientMsg, accOrNum);
+            openAcc(clientMsg, accOrNum);
 
         } else if(!strcmp(command, "start")){
                 
